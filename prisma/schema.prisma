@@ -1,0 +1,272 @@
+/*
+Arquivo: prisma/schema.prisma
+Objetivo: Schema do banco de dados para o Prisma ORM.
+Guia rapido: consulte imports no topo, depois tipos/constantes, e por fim a exportacao principal.
+*/
+
+// Raiz Interiors - Schema do Banco de Dados
+// Design de Interiores Premium
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// AUTENTICAÇÃO (Admin)
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(ADMIN)
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+// ============================================
+// PROJETOS
+// ============================================
+
+model Project {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  title       String
+  subtitle    String?
+  location    String
+  category    ProjectCategory
+  status      ProjectStatus  @default(PUBLISHED)
+  description String?        @db.Text
+  coverImage  String
+  year        String?
+  client      String?
+  area        String?
+  credits     String?        @db.Text
+  featured    Boolean        @default(false)
+  order       Int            @default(0)
+  images      ProjectImage[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model ProjectImage {
+  id            String   @id @default(cuid())
+  url           String
+  alt           String?
+  width         Int?
+  height        Int?
+  order         Int      @default(0)
+  visible       Boolean  @default(true)
+  desktopLayout Json?
+  mobileLayout  Json?
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum ProjectCategory {
+  RESIDENTIAL
+  COMMERCIAL
+  HOSPITALITY
+  RETAIL
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  COMING_SOON
+  WORK_IN_PROGRESS
+}
+
+// ============================================
+// SERVIÇOS
+// ============================================
+
+model Service {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  title       String
+  subtitle    String?
+  description String?        @db.Text
+  coverImage  String?
+  icon        String?
+  features    String[]       @default([])
+  order       Int            @default(0)
+  status      ServiceStatus  @default(PUBLISHED)
+  active      Boolean        @default(true)
+  images      ServiceImage[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model ServiceImage {
+  id            String   @id @default(cuid())
+  url           String
+  alt           String?
+  width         Int?
+  height        Int?
+  order         Int      @default(0)
+  visible       Boolean  @default(true)
+  desktopLayout Json?
+  mobileLayout  Json?
+  serviceId     String
+  service       Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum ServiceStatus {
+  DRAFT
+  PUBLISHED
+  COMING_SOON
+  WORK_IN_PROGRESS
+}
+
+// ============================================
+// CONTATOS / LEADS
+// ============================================
+
+model Contact {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String        @db.Text
+  status    ContactStatus @default(NEW)
+  source    String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+enum ContactStatus {
+  NEW
+  READ
+  REPLIED
+  ARCHIVED
+}
+
+// ============================================
+// NEWSLETTER
+// ============================================
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// ============================================
+// INSTAGRAM FEED
+// ============================================
+
+model InstagramPost {
+  id               String    @id @default(cuid())
+  postId           String    @unique
+  shortCode        String?
+  type             String    @default("Image")
+  url              String
+  displayUrl       String
+  videoUrl         String?
+  caption          String?   @db.Text
+  hashtags         String[]  @default([])
+  mentions         String[]  @default([])
+  likesCount       Int       @default(0)
+  commentsCount    Int       @default(0)
+  videoViewCount   Int?
+  dimensionsWidth  Int?
+  dimensionsHeight Int?
+  timestamp        DateTime?
+  isActive         Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+// ============================================
+// CONFIGURAÇÕES DO SITE
+// ============================================
+
+model SiteSettings {
+  id              String   @id @default(cuid())
+  siteName        String   @default("RAIZ Interiors")
+  tagline         String?
+  email           String?
+  phone           String?
+  address         String?
+  instagram       String?
+  pinterest       String?
+  linkedin        String?
+  facebook        String?
+  aboutText       String?  @db.Text
+  aboutImage      String?
+  heroVideoUrl    String?
+  heroImageUrl    String?
+  heroTitle       String?
+  heroSubtitle    String?
+  metaTitle       String?
+  metaDescription String?  @db.Text
+  updatedAt       DateTime @updatedAt
+}
+
+model PageSectionLayout {
+  id          String   @id @default(cuid())
+  pageKey     String
+  sectionKey  String
+  draft       Json
+  published   Json
+  updatedAt   DateTime @updatedAt
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+
+  @@unique([pageKey, sectionKey])
+}

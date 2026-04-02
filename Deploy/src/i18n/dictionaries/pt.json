@@ -1,0 +1,521 @@
+{
+  "nav": {
+    "projects": "Projetos",
+    "services": "Serviços",
+    "about": "Sobre",
+    "contact": "Contacto"
+  },
+  "footer": {
+    "navigation": "Navegação",
+    "contact": "Contacto",
+    "follow_us": "Siga-nos",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Utilização",
+    "rights": "Todos os direitos reservados",
+    "about_us": "Sobre Nós",
+    "brand_description": "Criamos espaços com significado que contam a sua história, através de um design cuidado e de uma atenção minuciosa ao detalhe."
+  },
+  "common": {
+    "learn_more": "Saber Mais",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "close": "Fechar",
+    "menu": "Menu"
+  },
+  "home": {
+    "hero": {
+      "slide1": {
+        "line1": "<em>Não é sobre</em> DESIGN de INTERIORES",
+        "line2": "<em>É sobre SI, a sua HISTORIA e as suas LIGAÇÕES</em>"
+      },
+      "slide2": {
+        "line1": "CRIAMOS <em>ESPAÇOS</em>",
+        "line2": "Com <em>PROPÓSITO</em>"
+      },
+      "slide3": {
+        "line1": "<em>Onde o DESIGN</em>",
+        "line2": "<em>encontra a sua</em> ALMA"
+      },
+      "slide4": {
+        "line1": "ESPAÇOS <em>TAILOR-MADE</em>",
+        "line2": "<em>que contam a sua historia</em>"
+      },
+      "slide5": {
+        "line1": "CASA <em>é onde os momentos mais simples</em>",
+        "line2": "<em>ganham</em> SIGNIFICADO"
+      },
+      "slide6": {
+        "line1": "CASA <em>que ACOLHE, ENVOLVE</em>",
+        "line2": "<em>e faz</em> FICAR"
+      }
+    },
+    "intro": {
+      "text": "Os nossos INTERIORES são DESENHADOS para estimular os SENTIDOS despertar EMOÇÕES e CRIAR novas EXPERIÊNCIAS e RITUAIS — inspirando NOVAS FORMAS de VIVER.",
+      "highlightWords": [
+        "INTERIORES",
+        "DESENHADOS",
+        "SENTIDOS",
+        "EMOÇÕES",
+        "CRIAR",
+        "EXPERIÊNCIAS",
+        "RITUAIS",
+        "VIVER"
+      ],
+      "cta": "Descobrir mais"
+    },
+    "featured_projects": {
+      "label": "Projectos Selecionados",
+      "view_all": "Ver todos os projectos",
+      "coming_soon": "Brevemente",
+      "work_in_progress": "em curso"
+    },
+    "services_preview": {
+      "label": "Os Nossos Serviços",
+      "text": "Somos um ESTÚDIO de DESIGN dedicado a entregar um SERVIÇO de DESIGN PERSONALIZADO do início ao fim, criado com QUALIDADE, PRECISÃO e PROFISSIONALISMO.",
+      "highlightWords": [
+        "DESIGN",
+        "ESTÚDIO",
+        "PERSONALIZADO",
+        "QUALIDADE",
+        "PRECISÃO",
+        "PROFISSIONALISMO"
+      ],
+      "cta": "Explorar Serviços"
+    },
+    "about_preview": {
+      "text": "Não criamos apenas <span class=\"uppercase\">casas bonitas</span>, desenhamos espaços <span class=\"uppercase\">significativos</span> que contam a <span class=\"uppercase\">sua história</span>, e inspiram <span class=\"uppercase\">experiências</span> onde se constroem <span class=\"uppercase\">memórias</span>.",
+      "cta": "Saber Mais",
+      "img_alt": "RAIZ Interiors - Viver com beleza"
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "Sobre <span class=\"italic\">Nós</span>",
+      "paragraphs": [
+        "A essência do nosso trabalho reside na arte de pensar e desenhar espaços com uma narrativa particular e pessoal em cada projeto.",
+        "Acreditamos numa abordagem empática e íntima, cuidadosamente adaptada a cada indivíduo, à sua história e às suas ligações.",
+        "A nossa formação e experiência passada moldam o nosso profissionalismo, mas é a forma como vemos, sentimos e pensamos que nos distingue, criando soluções verdadeiramente distintas.",
+        "Com uma perspetiva sensorial e emocional, elaboramos designs humanizados, funcionais, coerentes e equilibrados, moldando ambientes que irradiam harmonia, bem-estar e serenidade.",
+        "Reconhecendo o profundo impacto que os espaços têm no bem-estar e na qualidade de vida, damos significado às experiências que eles nutrem.",
+        "O nosso objetivo é estimular os sentidos, evocar emoções e inspirar novas experiências e rituais … NOVAS FORMAS DE VIVER.",
+        "Os nossos interiores são imersivos, serenos, elegantes e profundamente significativos.",
+        "Ao trabalhar em estreita colaboração com os nossos clientes, cada projeto evolui para uma jornada de ligação e interação, transformando o processo numa experiência verdadeiramente única e agradável."
+      ]
+    },
+    "values": {
+      "title": "Os Nossos <span class=\"italic\">Valores</span>",
+      "items": [
+        {
+          "title": "Autenticidade",
+          "description": "Cada projeto é um reflexo único dos seus habitantes. Ouvimos profundamente para criar espaços que se sintam genuinamente seus."
+        },
+        {
+          "title": "Qualidade",
+          "description": "Acreditamos no investimento em materiais, artesanato e detalhes que resistam ao teste do tempo."
+        },
+        {
+          "title": "Colaboração",
+          "description": "O design é um diálogo. Trabalhamos em estreita colaboração com clientes, artesãos e artífices para obter resultados excecionais."
+        },
+        {
+          "title": "Sustentabilidade",
+          "description": "O design atencioso considera o seu impacto. Priorizamos materiais e práticas que respeitem o nosso ambiente."
+        }
+      ]
+    },
+    "founder": {
+      "label": "A Fundadora",
+      "title": "A Visão Por Trás dos <span class=\"italic\">Nossos Designs</span>",
+      "paragraphs": [
+        "Com mais de uma década de experiência em arquitetura e design de interiores, a nossa fundadora traz uma sensibilidade estética refinada e uma compreensão profunda de como os espaços moldam as nossas experiências diárias.",
+        "Formada em arquitetura clássica com uma paixão pelo design contemporâneo, ela faz a ponte entre tradição e inovação para criar espaços que se sentem simultaneamente intemporais e frescos.",
+        "\"Acredito que os melhores interiores são aqueles que evoluem com os seus habitantes, que contam uma história e convidam novos capítulos a serem escritos.\""
+      ]
+    },
+    "cta": {
+      "text": "Deixe-nos fazer parte da sua história...",
+      "button": "Contacto"
+    },
+    "instagram": {
+      "text": "INSPIRAÇÃO através do DESIGN. Bem-vindo ao nosso MUNDO e inspire-se...",
+      "highlightWords": [
+        "INSPIRAÇÃO",
+        "DESIGN",
+        "MUNDO",
+        "INSPIRE-SE"
+      ]
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "Entre em <span class=\"italic\">Contacto</span>",
+      "description": "Gostaríamos muito de ouvir sobre o seu projeto. Quer esteja pronto para começar ou apenas a explorar possibilidades, vamos iniciar uma conversa."
+    },
+    "info": {
+      "title": "Informação de <span class=\"italic\">Contacto</span>",
+      "email": "Email",
+      "location": {
+        "label": "Localização",
+        "value": "Lisboa, Portugal"
+      },
+      "followUs": "Siga-nos"
+    },
+    "form": {
+      "title": "Envie uma <span class=\"italic\">Mensagem</span>",
+      "labels": {
+        "name": "Nome *",
+        "email": "Email *",
+        "phone": "Telefone",
+        "subject": "Assunto *",
+        "message": "Mensagem *"
+      },
+      "placeholders": {
+        "name": "O seu nome",
+        "email": "seu@email.com",
+        "phone": "+351 XXX XXX XXX",
+        "subject": "Inquérito de projeto",
+        "message": "Conte-nos sobre o seu projeto..."
+      },
+      "validation": {
+        "name": "O nome deve ter pelo menos 2 caracteres",
+        "email": "Por favor, insira um email válido",
+        "subject": "Por favor, insira um assunto",
+        "message": "A mensagem deve ter pelo menos 10 caracteres"
+      },
+      "success": {
+        "title": "Obrigado!",
+        "message": "A sua mensagem foi enviada. Entraremos em contacto em breve."
+      },
+      "button": {
+        "sending": "A enviar...",
+        "send": "Enviar Mensagem"
+      }
+    }
+  },
+  "services": {
+    "hero": {
+      "text": "Somos um <span class=\"uppercase\">estúdio de design</span> dedicado a criar experiências <span class=\"uppercase\">personalizadas</span>, acompanhando cada projeto do início ao fim com um serviço detalhado e <span class=\"uppercase\">tailor-made</span>."
+    },
+    "list": {
+      "architecture": {
+        "title": "Arquitetura",
+        "excerpt": "Soluções arquitetónicas que criam experiências."
+      },
+      "interior-design": {
+        "title": "Design de Interiores",
+        "excerpt": "Ambientes interiores que refletem o seu estilo de vida e alma."
+      },
+      "decoration": {
+        "title": "Decoração",
+        "excerpt": "Curadoria de mobiliário, arte e acessórios para trazer personalidade ao espaço."
+      },
+      "bespoke-furniture": {
+        "title": "Mobiliário por Medida",
+        "excerpt": "Mobiliário personalizado desenhado para se ajustar ao seu espaço e estilo únicos."
+      },
+      "consultancy": {
+        "title": "Consultoria",
+        "excerpt": "Orientação especializada personalizada em soluções de Design."
+      },
+      "styling-staging": {
+        "title": "Estilizacao e Staging",
+        "excerpt": "Transformação estratégica de espaços para maximizar o apelo."
+      }
+    },
+    "process": {
+      "title": "O Nosso <span class=\"italic\">Processo</span>",
+      "steps": [
+        {
+          "number": "01",
+          "title": "Descoberta",
+          "description": "Começamos com uma consulta aprofundada para entender a sua visão, estilo de vida e requisitos."
+        },
+        {
+          "number": "02",
+          "title": "Conceito",
+          "description": "A nossa equipa desenvolve conceitos iniciais, moodboards e layouts espaciais para a sua aprovação."
+        },
+        {
+          "number": "03",
+          "title": "Design",
+          "description": "Designs detalhados, seleções de materiais e desenhos técnicos dão vida à visão."
+        },
+        {
+          "number": "04",
+          "title": "Execução",
+          "description": "Supervisionamos todos os aspetos da implementação, garantindo qualidade e atenção aos detalhes."
+        },
+        {
+          "number": "05",
+          "title": "Entrega",
+          "description": "Styling final e entrega do seu espaço transformado, pronto para ser vivido e amado."
+        }
+      ]
+    },
+    "detail": {
+      "offer": "O Que <span class=\"italic\">Oferecemos</span>",
+      "include": "Serviços Incluem",
+      "back": "Todos os Serviços",
+      "cta": {
+        "text": "Vamos criar algo belo juntos...",
+        "button": "Contacto"
+      },
+      "items": {
+        "architecture": {
+          "subtitle": "Soluções arquitetónicas que criam experiências",
+          "description": "Do conceito à conclusão, projetamos soluções arquitetónicas que equilibram forma e função. Os nossos serviços de arquitetura abrangem toda a jornada, desde o conceito inicial até à construção final.\n\nCada projeto começa por ouvir - as suas aspirações, o seu estilo de vida e a sua visão para o espaço. A partir daí, desenvolvemos soluções que são funcionalmente excelentes e esteticamente inspiradoras.",
+          "features": [
+            "Design de novas construções",
+            "Remodelações e extensões",
+            "Planeamento e otimização espacial",
+            "Documentação para licenças de construção",
+            "Supervisão de obra",
+            "Soluções de design sustentável"
+          ]
+        },
+        "interior-design": {
+          "subtitle": "Ambientes interiores que refletem o seu estilo de vida e alma",
+          "description": "Criar ambientes interiores coesos que refletem o seu estilo de vida e aspirações. O design de interiores é onde a visão encontra a realidade.\n\nA nossa abordagem combina um planeamento cuidadoso do espaço com um olhar atento a materiais, cores e texturas. O resultado são espaços que parecem curados e vividos, sofisticados mas acolhedores.",
+          "features": [
+            "Planeamento de espaço e design de layout",
+            "Seleção de materiais e acabamentos",
+            "Design de mobiliário personalizado",
+            "Design de iluminação",
+            "Consultoria de cor",
+            "Curadoria de arte e acessórios"
+          ]
+        },
+        "decoration": {
+          "subtitle": "Ambientes interiores que refletem o seu estilo de vida e alma",
+          "description": "Curadoria de mobiliário, arte e acessórios para dar vida ao seu espaço com personalidade. A decoração é a camada que traz calor e singularidade a qualquer espaço.\n\nQuer se trate de renovar uma única divisão ou de decorar uma casa inteira, trazemos um olhar especializado e acesso a fontes exclusivas para elevar os seus interiores.",
+          "features": [
+            "Seleção e aquisição de mobiliário",
+            "Consultoria e aquisição de arte",
+            "Seleção de têxteis",
+            "Curadoria de objetos decorativos",
+            "Aquisição de antiguidades",
+            "Styling final e instalação"
+          ]
+        },
+        "bespoke-furniture": {
+          "subtitle": "Mobiliário personalizado desenhado para se ajustar ao seu espaço e estilo únicos.",
+          "description": "Mobiliário personalizado desenhado e fabricado para se ajustar perfeitamente ao seu espaço único e estilo pessoal. Cada peça é concebida com um propósito, equilibrando estética e função.\n\nDo conceito à produção, supervisionamos cada detalhe para garantir que o resultado seja uma peça verdadeiramente única que eleva o seu interior.",
+          "features": [
+            "Design de mobiliário personalizado",
+            "Seleção de materiais e acabamentos",
+            "Gestão de produção",
+            "Soluções integradas",
+            "Seleção de estofos e têxteis",
+            "Instalação e styling"
+          ]
+        },
+        "consultancy": {
+          "subtitle": "Orientação especializada personalizada em soluções de Design",
+          "description": "Orientação especializada em decisões de design, materiais e planeamento espacial para o seu projeto. Nem todos os projetos requerem um serviço completo de design.\n\nQuer precise de ajuda com um layout desafiante, decisões de materiais ou uma segunda opinião sobre a direção do seu design, estamos aqui para o guiar com clareza e perícia.",
+          "features": [
+            "Direção de design e desenvolvimento de conceito",
+            "Consultoria de materiais e cores",
+            "Resolução de problemas espaciais",
+            "Recomendações de fornecedores e empreiteiros",
+            "Planeamento e otimização de orçamento",
+            "Orientação sobre cronograma do projeto"
+          ]
+        },
+        "styling-staging": {
+          "subtitle": "Transformação estratégica de espaços para maximizar o apelo",
+          "description": "Transformar propriedades para venda ou arrendamento com um styling estratégico que maximiza o apelo. As primeiras impressões contam.\n\nEntendemos o que os compradores procuram e criamos ambientes que lhes permitem imaginar-se no espaço. Styling estratégico que faz toda a diferença.",
+          "features": [
+            "Avaliação de propriedade e estratégia",
+            "Aluguer e colocação de mobiliário",
+            "Styling de acessórios",
+            "Preparação para fotografia",
+            "Styling para open house",
+            "Staging de imóveis vazios e ocupados"
+          ]
+        }
+      }
+    },
+    "cta": {
+      "text": "Deixe-nos fazer parte da sua história...",
+      "button": "Contacto"
+    }
+  },
+  "projects": {
+    "hero": {
+      "text": "Uma seleção <span class=\"uppercase\">curada</span> do nosso trabalho, onde cada projeto reflete o nosso compromisso em criar espaços com <span class=\"uppercase\">significado</span>, pensados para contar histórias <span class=\"uppercase\">únicas</span>."
+    },
+    "status": {
+      "coming_soon": "brevemente",
+      "work_in_progress": "em curso"
+    },
+    "list": {
+      "summer-house-comporta": {
+        "title": "CASA DE VERÃO NA COMPORTA",
+        "subtitle": "",
+        "location": "COMPORTA RETREAT"
+      },
+      "contemporary-city-house": {
+        "title": "CASA CITADINA CONTEMPORANEA",
+        "subtitle": "",
+        "location": "ALMADA"
+      },
+      "elegant-timeless-duplex": {
+        "title": "DUPLEX ELEGANTE & INTEMPORAL",
+        "subtitle": "",
+        "location": "BRAGA"
+      },
+      "beach-house-troia": {
+        "title": "CASA DE PRAIA EM TROIA",
+        "subtitle": "",
+        "location": "PESTANA TROIA ECO RESORT"
+      },
+      "pombaline-restoration-principe-real": {
+        "title": "REABILITAÇÃO POMBALINA PRÍNCIPE REAL",
+        "subtitle": "",
+        "location": "LISBOA"
+      },
+      "rural-retreat": {
+        "title": "REFUGIO RURAL",
+        "subtitle": "",
+        "location": "SERRA DA ESTRELA"
+      },
+      "store-restauration-atelier": {
+        "title": "ATELIER DE RESTAURO E OBJETOS CURADOS",
+        "subtitle": "",
+        "location": "ALMADA"
+      },
+      "beach-house-troia-ii": {
+        "title": "CASA DE PRAIA",
+        "subtitle": "em Troia II",
+        "location": "PESTANA TROIA ECO RESORT"
+      },
+      "weekend-family-house": {
+        "title": "CASA DE FIM DE SEMANA",
+        "subtitle": "",
+        "location": "AROEIRA"
+      },
+      "young-soul-city-apartment": {
+        "title": "APARTAMENTO URBANO DE ALMA JOVEM",
+        "subtitle": "",
+        "location": "MIREAR TERRACES"
+      }
+    },
+    "detail": {
+      "labels": {
+        "location": "Localização",
+        "year": "Ano",
+        "category": "Categoria",
+        "type": "Tipo",
+        "credits": "Créditos",
+        "photography": "Fotografia / 3D",
+        "back": "Voltar aos Projetos",
+        "prev": "Anterior",
+        "next": "Seguinte"
+      },
+      "items": {
+        "summer-house-comporta": {
+          "description": "Inspirada pela beleza natural da Comporta e pelos serenos campos de arroz que se estendem no horizonte, esta casa de verão capta a essência da paisagem que a envolve. O design de interiores desenvolve-se através de uma paleta harmoniosa de cores, texturas e materiais orgânicos, criando uma atmosfera tranquila e enraizada.\n\nUm verdadeiro refúgio de férias, pensado para momentos em família, para uma vivência mais pausada e para a criação de memórias duradouras.",
+          "credits": "DESIGN DE INTERIORES E DECORAÇÃO (co-autoria Carla Belo)",
+          "photography": "RAIZ INTERIORS STUDIO"
+        },
+        "contemporary-city-house": {
+          "description": "Elegante e discreta, esta casa contemporânea na cidade representa a verdadeira alma do minimalismo moderno. Uma paleta monocromática cuidadosamente curada e linhas arquitetónicas limpas trazem harmonia e equilíbrio ao espaço, onde cada elemento tem um propósito e cada detalhe fala de uma simplicidade refinada.\n\nConcebida para uma vida vivida com intenção, os interiores fundem funcionalidade e beleza de forma perfeita. A luz natural desempenha um papel central, aumentando a sensação de abertura e calma. Escolhas criteriosas de materiais e peças de mobiliário personalizadas acrescentam um calor subtil, criando um ambiente que se sente simultaneamente sofisticado e profundamente acolhedor.",
+          "credits": "REMODELAÇÃO TOTAL, ARQUITETURA DE INTERIORES E DECORAÇÃO",
+          "photography": "RAIZ INTERIORS STUDIO"
+        },
+        "elegant-timeless-duplex": {
+          "description": "Elegante e acolhedor, este apartamento duplex intemporal foi projetado para evocar o conforto e o requinte de um boutique hotel, adaptado de forma harmoniosa ao ritmo de uma vida familiar multifuncional.\n\nPensados para equilibrar sofisticação com a facilidade do dia-a-dia, os espaços fluem naturalmente entre momentos sociais e privados. Materiais ricos, texturas suaves e uma iluminação cuidadosamente estudada criam uma atmosfera que se sente luxuosa e genuinamente acolhedora - uma casa onde cada detalhe foi pensado e cada espaço convida a ficar e criar memórias.",
+          "credits": "REMODELAÇÃO TOTAL, ARQUITETURA DE INTERIORES (co-autoria Carla Belo)",
+          "photography": "JOÃO RODRIGO CORREIA"
+        },
+        "beach-house-troia": {
+          "description": "Localizada nas extensas dunas de Troia, esta casa de praia reflete a essência da vida costeira. Inspirados pelos tons suaves da areia envolvente, os interiores adotam uma estética minimalista e monocromática, onde a simplicidade e a serenidade assumem o protagonismo.\n\nConcebida como refúgio sazonal para uma família, a casa combina conforto e funcionalidade, fluindo de forma harmoniosa para promover momentos de descanso, contemplação e convívio. Uma celebração refinada, ainda que despretensiosa do viver junto ao mar em Portugal.",
+          "credits": "DESIGN DE INTERIORES E DECORAÇÃO (co-autoria Carla Belo)",
+          "photography": "IMAGENS 3D: SARA PETIZ VIANA"
+        },
+        "pombaline-restoration-principe-real": {
+          "description": "Localizado no coração do Príncipe Real, este edifício pombalino foi integralmente reabilitado com o objetivo de adaptar cada apartamento às exigências da vida contemporânea, preservando ao máximo a autenticidade original.\n\nApesar do estado avançado de degradação, recuperaram-se elementos históricos como painéis de azulejos, a escadaria original e vestígios de frescos, mantendo viva a alma do edifício nas áreas comuns.\n\nNos apartamentos, onde a descaracterização era mais evidente, optou-se por uma linguagem contemporânea, neutra e intemporal — elegante, funcional e harmoniosamente integrada na identidade arquitetónica pombalina — devolvendo conforto, simplicidade e coerência ao habitar atual.",
+          "credits": "ARQUITETURA DE INTERIORES E RESTAURO",
+          "photography": "IMAGENS 3D: DMYTRO"
+        },
+        "rural-retreat": {
+          "description": "Situada no sereno interior de Portugal, esta casa de retiro rural oferece uma fuga relaxante da agitação da vida quotidiana.\n\nPensada para quem procura tranquilidade e ligação genuína ao encanto de uma típica casa de aldeia, repleta de história, texturas e recantos acolhedores.\n\nAssente em materiais naturais e na arquitetura vernacular, o projeto preserva a autenticidade enquanto a reinterpreta com subtileza. Cada ambiente privilegia o conforto e a experiência sensorial transformando a casa num verdadeiro refúgio de descanso, reflexão e renovação profunda.",
+          "credits": "ARQUITETURA, ARQUITETURA DE INTERIORES E DECORAÇÃO",
+          "photography": ""
+        },
+        "store-restauration-atelier": {
+          "description": "Numa reinterpretação contemporânea das tradicionais lojas de centro histórico, surge uma loja galeria onde arquitetura, curadoria e restauro coexistem.\n\nUm espaço que celebra o objecto e a sua resignificação através de um atelier de restauro integrado, reforçando a ligação entre preservação, autenticidade e design.\n\nA estética minimalista, a iluminação cuidadosamente desenhada e a neutralidade dos materiais criam uma atmosfera serena que valoriza cada peça, conferindo-lhe um protagonismo quase museográfico e uma experiência de descoberta intencional.",
+          "credits": "ARQUITETURA DE INTERIORES",
+          "photography": "RAIZ INTERIORS STUDIO"
+        },
+        "beach-house-troia-ii": {
+          "description": "Brevemente.",
+          "credits": "",
+          "photography": ""
+        },
+        "weekend-family-house": {
+          "description": "Brevemente.",
+          "credits": "",
+          "photography": ""
+        },
+        "young-soul-city-apartment": {
+          "photography": ""
+        }
+      }
+    }
+  },
+  "legal": {
+    "privacy": {
+      "title": "Política de <span class=\"italic\">Privacidade</span>",
+      "description": "Esta política de privacidade descreve como as informações pessoais são recolhidas, utilizadas e protegidas.",
+      "sections": [
+        {
+          "title": "Recolha de Informação",
+          "content": "Apenas recolhemos os dados necessários para responder a pedidos de contacto e prestar os nossos serviços. Isto pode incluir o seu nome, endereço de e-mail e número de telefone quando fornecidos através dos nossos formulários de contacto."
+        },
+        {
+          "title": "Uso da Informação",
+          "content": "As informações recolhidas são utilizadas exclusivamente para lhe prestar os serviços solicitados, melhorar o nosso website e comunicar consigo sobre os seus projetos."
+        },
+        {
+          "title": "Cookies",
+          "content": "Utilizamos cookies essenciais para garantir que o website funciona corretamente. Poderemos também utilizar cookies analíticos para compreender como os visitantes interagem com o nosso conteúdo, respeitando sempre as suas preferências."
+        },
+        {
+          "title": "Proteção de Dados",
+          "content": "Aplicamos medidas de segurança razoáveis para proteger as informações armazenadas contra acesso não autorizado, perda ou divulgação. Não vendemos nem partilhamos os seus dados pessoais com terceiros."
+        },
+        {
+          "title": "Direitos do Utilizador",
+          "content": "Pode solicitar o acesso, correção ou remoção dos seus dados pessoais a qualquer momento, contactando-nos diretamente através dos nossos canais oficiais."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Termos de <span class=\"italic\">Utilização</span>",
+      "description": "Leia atentamente estes termos antes de utilizar o nosso website.",
+      "sections": [
+        {
+          "title": "Aceitação de Termos",
+          "content": "Ao aceder e utilizar este website, aceita e concorda em estar vinculado aos termos e disposições deste acordo."
+        },
+        {
+          "title": "Uso do Website",
+          "content": "O conteúdo deste website serve apenas para sua informação e uso geral. Está sujeito a alterações sem aviso prévio. O uso não autorizado deste website pode dar origem a um pedido de indemnização por danos."
+        },
+        {
+          "title": "Propriedade Intelectual",
+          "content": "Todos os designs, imagens e conteúdos deste website são propriedade da RAIZ Interiors. A reprodução é proibida, exceto em conformidade com o aviso de direitos de autor."
+        },
+        {
+          "title": "Limitação de Responsabilidade",
+          "content": "RAIZ Interiors não será responsável por quaisquer danos decorrentes da utilização deste website ou das informações nele contidas."
+        },
+        {
+          "title": "Lei Aplicável",
+          "content": "A sua utilização deste website e qualquer litígio daí decorrente estão sujeitos às leis de Portugal."
+        }
+      ]
+    }
+  }
+}
