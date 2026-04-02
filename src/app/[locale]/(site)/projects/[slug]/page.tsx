@@ -2,7 +2,6 @@ import { getDictionary } from '@/i18n/get-dictionary'
 import { Locale } from '@/i18n/config'
 import { ProjectDetailClient } from './project-detail-client'
 import { defaultProjectDetails, defaultProjects } from '@/lib/cms/default-projects'
-import { getProjectImageGallery } from '@/lib/cms/project-image-gallery'
 
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>
@@ -76,7 +75,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
   const localizedProject = {
     ...baseProject,
-    images: getProjectImageGallery(slug, baseProject.images),
+    images: baseProject.images,
     title: listDict?.title || baseProject.title,
     subtitle: listDict?.subtitle !== undefined ? listDict.subtitle : baseProject.subtitle,
     location: listDict?.location || baseProject.location,
