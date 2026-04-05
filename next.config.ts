@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
   images: {
     unoptimized: true,
+    qualities: [75, 85],
     remotePatterns: [
       {
         protocol: 'https',
@@ -38,6 +39,33 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/uploads/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/raizlogo_white.png',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/raizlogo_preta.png',
         headers: [
           {
             key: 'Cache-Control',

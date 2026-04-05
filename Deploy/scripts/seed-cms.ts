@@ -1,10 +1,22 @@
+import 'dotenv/config'
 import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 import { defaultProjects, defaultProjectDetails } from '../src/lib/cms/default-projects'
 import { defaultServices, defaultServiceDetails } from '../src/lib/cms/default-services'
 import { defaultPageSectionLayouts } from '../src/lib/cms/default-layouts'
 import { createDefaultBox } from '../src/lib/cms/layout-types'
 
-const prisma = new PrismaClient()
+const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL
+if (!connectionString) {
+  throw new Error('DIRECT_URL or DATABASE_URL is required to run cms seed.')
+}
+
+const schema = process.env.DATABASE_SCHEMA?.trim()
+const adapter = new PrismaPg(
+  { connectionString },
+  schema ? { schema } : undefined
+)
+const prisma = new PrismaClient({ adapter } as any)
 
 function layoutFromImages(images: string[]) {
   return {

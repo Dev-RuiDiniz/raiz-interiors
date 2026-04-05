@@ -1,103 +1,132 @@
-/*
-Arquivo: src/app/admin/notifications/page.tsx
-Objetivo: Pagina do painel administrativo.
-Guia rapido: consulte imports no topo, depois tipos/constantes, e por fim a exportacao principal.
-*/
-
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import {
-  Bell,
-  Mail,
-  Users,
-  FileText,
-  Settings,
-  Check,
-  CheckCheck,
-  Trash2,
-  Clock,
-} from 'lucide-react'
+import { Bell, Check, CheckCheck, Clock, Mail, Settings, Trash2, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const notifications = [
-  {
-    id: '1',
-    type: 'contact',
-    title: 'New Contact Form Submission',
-    message: 'Maria Silva submitted a contact form regarding interior design consultation.',
-    time: '5 minutes ago',
-    read: false,
-    icon: Mail,
-  },
-  {
-    id: '2',
-    type: 'subscriber',
-    title: 'New Newsletter Subscriber',
-    message: 'john.doe@email.com subscribed to your newsletter.',
-    time: '1 hour ago',
-    read: false,
-    icon: Users,
-  },
-  {
-    id: '3',
-    type: 'contact',
-    title: 'New Contact Form Submission',
-    message: 'Pedro Santos inquired about office space design services.',
-    time: '3 hours ago',
-    read: true,
-    icon: Mail,
-  },
-  {
-    id: '4',
-    type: 'system',
-    title: 'Project Published',
-    message: 'Beach House in Troia has been published successfully.',
-    time: '1 day ago',
-    read: true,
-    icon: FileText,
-  },
-  {
-    id: '5',
-    type: 'system',
-    title: 'Settings Updated',
-    message: 'Site metadata has been updated.',
-    time: '2 days ago',
-    read: true,
-    icon: Settings,
-  },
-  {
-    id: '6',
-    type: 'subscriber',
-    title: 'New Newsletter Subscriber',
-    message: 'ana.costa@email.com subscribed to your newsletter.',
-    time: '3 days ago',
-    read: true,
-    icon: Users,
-  },
-]
+type ContactNotification = {
+  id: string
+  name: string
+  email: string
+  subject: string
+  createdAt: string
+}
 
-const typeColors: Record<string, string> = {
+type SubscriberNotification = {
+  id: string
+  email: string
+  active: boolean
+  createdAt: string
+}
+
+type NotificationItem = {
+  id: string
+  type: 'contact' | 'subscriber' | 'system'
+  title: string
+  message: string
+  time: string
+  timestamp: string
+  read: boolean
+}
+
+const typeColors: Record<NotificationItem['type'], string> = {
   contact: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
   subscriber: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
   system: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
 }
 
+function relativeTime(iso: string) {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return '-'
+  const diff = Date.now() - date.getTime()
+  const minutes = Math.floor(diff / 60000)
+  if (minutes < 1) return 'just now'
+  if (minutes < 60) return `${minutes} minutes ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours} hours ago`
+  const days = Math.floor(hours / 24)
+  return `${days} days ago`
+}
+
 export default function NotificationsPage() {
-  const [notificationList, setNotificationList] = useState(notifications)
+  const [notificationList, setNotificationList] = useState<NotificationItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [filter, setFilter] = useState<'all' | 'unread'>('all')
+
+  useEffect(() => {
+    let active = true
+
+    async function loadNotifications() {
+      setLoading(true)
+      setLoadError(null)
+      try {
+        const [contactsResponse, newsletterResponse] = await Promise.all([
+          fetch('/api/admin/contacts', { cache: 'no-store' }),
+          fetch('/api/admin/newsletter', { cache: 'no-store' }),
+        ])
+
+        if (!contactsResponse.ok || !newsletterResponse.ok) {
+          throw new Error('Nao foi possivel carregar notificacoes.')
+        }
+
+        const contacts = (await contactsResponse.json()) as ContactNotification[]
+        const subscribers = (await newsletterResponse.json()) as SubscriberNotification[]
+
+        const contactItems: NotificationItem[] = contacts.slice(0, 25).map((contact) => ({
+          id: `contact:${contact.id}`,
+          type: 'contact',
+          title: 'New Contact Form Submission',
+          message: `${contact.name} (${contact.email}) sent "${contact.subject || 'No subject'}".`,
+          time: relativeTime(contact.createdAt),
+          timestamp: contact.createdAt,
+          read: false,
+        }))
+
+        const subscriberItems: NotificationItem[] = subscribers
+          .filter((subscriber) => subscriber.active)
+          .slice(0, 25)
+          .map((subscriber) => ({
+            id: `subscriber:${subscriber.id}`,
+            type: 'subscriber',
+            title: 'New Newsletter Subscriber',
+            message: `${subscriber.email} subscribed to your newsletter.`,
+            time: relativeTime(subscriber.createdAt),
+            timestamp: subscriber.createdAt,
+            read: false,
+          }))
+
+        const merged = [...contactItems, ...subscriberItems]
+          .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+          .slice(0, 50)
+
+        if (!active) return
+        setNotificationList(merged)
+      } catch (error) {
+        if (!active) return
+        setLoadError(error instanceof Error ? error.message : 'Erro ao carregar notificacoes.')
+        setNotificationList([])
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    void loadNotifications()
+    return () => {
+      active = false
+    }
+  }, [])
 
   const unreadCount = notificationList.filter((n) => !n.read).length
 
-  const filteredNotifications = notificationList.filter((n) =>
-    filter === 'all' ? true : !n.read
+  const filteredNotifications = useMemo(
+    () => notificationList.filter((n) => (filter === 'all' ? true : !n.read)),
+    [filter, notificationList]
   )
 
   const markAsRead = (id: string) => {
-    setNotificationList((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    )
+    setNotificationList((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
   }
 
   const markAllAsRead = () => {
@@ -114,7 +143,6 @@ export default function NotificationsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-cormorant text-2xl lg:text-3xl font-light text-stone-900 dark:text-white">
@@ -146,7 +174,12 @@ export default function NotificationsPage() {
         </div>
       </div>
 
-      {/* Filters */}
+      {loadError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {loadError}
+        </div>
+      )}
+
       <div className="flex gap-2">
         <button
           onClick={() => setFilter('all')}
@@ -177,30 +210,38 @@ export default function NotificationsPage() {
         </button>
       </div>
 
-      {/* Notifications List */}
       <div className="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 divide-y divide-stone-100 dark:divide-stone-800">
-        {filteredNotifications.length > 0 ? (
+        {loading ? (
+          <div className="p-8 text-center">
+            <div className="inline-flex items-center gap-2 text-stone-500 dark:text-stone-400">
+              <Clock size={16} />
+              Loading notifications...
+            </div>
+          </div>
+        ) : filteredNotifications.length > 0 ? (
           filteredNotifications.map((notification, index) => (
             <motion.div
               key={notification.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2, delay: index * 0.05 }}
+              transition={{ duration: 0.2, delay: index * 0.03 }}
               className={cn(
                 'p-5 hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors',
                 !notification.read && 'bg-blue-50/50 dark:bg-blue-900/10'
               )}
             >
               <div className="flex items-start gap-4">
-                {/* Icon */}
-                <div className={cn(
-                  'w-10 h-10 rounded-lg flex items-center justify-center shrink-0',
-                  typeColors[notification.type]
-                )}>
-                  <notification.icon size={20} />
+                <div
+                  className={cn(
+                    'w-10 h-10 rounded-lg flex items-center justify-center shrink-0',
+                    typeColors[notification.type]
+                  )}
+                >
+                  {notification.type === 'contact' && <Mail size={20} />}
+                  {notification.type === 'subscriber' && <Users size={20} />}
+                  {notification.type === 'system' && <Settings size={20} />}
                 </div>
 
-                {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-4">
                     <div>
@@ -208,12 +249,14 @@ export default function NotificationsPage() {
                         {!notification.read && (
                           <span className="w-2 h-2 bg-blue-500 rounded-full" />
                         )}
-                        <h3 className={cn(
-                          'font-inter text-sm',
-                          !notification.read
-                            ? 'font-semibold text-stone-900 dark:text-white'
-                            : 'font-medium text-stone-700 dark:text-stone-300'
-                        )}>
+                        <h3
+                          className={cn(
+                            'font-inter text-sm',
+                            !notification.read
+                              ? 'font-semibold text-stone-900 dark:text-white'
+                              : 'font-medium text-stone-700 dark:text-stone-300'
+                          )}
+                        >
                           {notification.title}
                         </h3>
                       </div>
@@ -226,7 +269,6 @@ export default function NotificationsPage() {
                       </div>
                     </div>
 
-                    {/* Actions */}
                     <div className="flex items-center gap-1 shrink-0">
                       {!notification.read && (
                         <button
@@ -259,30 +301,6 @@ export default function NotificationsPage() {
           </div>
         )}
       </div>
-
-      {/* Notification Settings Link */}
-      <div className="bg-stone-50 dark:bg-stone-800/50 rounded-xl p-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Settings size={20} className="text-stone-500" />
-            <div>
-              <p className="font-inter text-sm font-medium text-stone-900 dark:text-white">
-                Notification Preferences
-              </p>
-              <p className="font-inter text-xs text-stone-500 dark:text-stone-400">
-                Manage how you receive notifications
-              </p>
-            </div>
-          </div>
-          <a
-            href="/admin/settings"
-            className="font-inter text-sm text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white transition-colors"
-          >
-            Settings →
-          </a>
-        </div>
-      </div>
     </div>
   )
 }
-

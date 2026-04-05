@@ -29,6 +29,12 @@ function imageStyle(item: GalleryLayoutItem, mode: 'desktop' | 'mobile') {
   } as const
 }
 
+function imageSizes(item: GalleryLayoutItem) {
+  const desktopWidth = Math.max(10, Math.min(100, Math.round(item.desktop.w)))
+  const mobileWidth = Math.max(20, Math.min(100, Math.round(item.mobile.w)))
+  return `(min-width: 768px) ${desktopWidth}vw, ${mobileWidth}vw`
+}
+
 export function GalleryLayoutRenderer({ layout, className, itemClassName }: GalleryLayoutRendererProps) {
   const visibleItems = layout.items.filter((item) => item.visible).sort((a, b) => a.order - b.order)
 
@@ -51,7 +57,7 @@ export function GalleryLayoutRenderer({ layout, className, itemClassName }: Gall
               alt={item.alt || 'Gallery image'}
               fill
               loading="lazy"
-              sizes="(min-width: 768px) 50vw, 100vw"
+              sizes={imageSizes(item)}
               className="select-none"
               style={imageStyle(item, 'desktop')}
             />
@@ -74,7 +80,7 @@ export function GalleryLayoutRenderer({ layout, className, itemClassName }: Gall
               alt={item.alt || 'Gallery image'}
               fill
               loading="lazy"
-              sizes="100vw"
+              sizes={imageSizes(item)}
               className="select-none"
               style={imageStyle(item, 'mobile')}
             />

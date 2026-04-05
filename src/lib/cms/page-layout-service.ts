@@ -1,6 +1,10 @@
 import prisma from '@/lib/prisma'
 import { getDefaultLayout } from '@/lib/cms/default-layouts'
 import { normalizeGalleryLayout, type GalleryLayout } from '@/lib/cms/layout-types'
+import {
+  getLocalDraftAndPublishedPageLayout,
+  getLocalPublishedPageLayout,
+} from '@/lib/cms/local-page-layout-store'
 
 export interface PageLayoutResult {
   layout: GalleryLayout
@@ -10,11 +14,7 @@ export interface PageLayoutResult {
 
 export async function getPublishedPageLayout(pageKey: string, sectionKey: string): Promise<PageLayoutResult> {
   if (!prisma) {
-    return {
-      layout: getDefaultLayout(pageKey, sectionKey),
-      publishedAt: null,
-      exists: false,
-    }
+    return getLocalPublishedPageLayout(pageKey, sectionKey)
   }
 
   const record = await prisma.pageSectionLayout.findUnique({
@@ -43,14 +43,7 @@ export async function getPublishedPageLayout(pageKey: string, sectionKey: string
 
 export async function getDraftAndPublishedPageLayout(pageKey: string, sectionKey: string) {
   if (!prisma) {
-    const fallback = getDefaultLayout(pageKey, sectionKey)
-    return {
-      draft: fallback,
-      published: fallback,
-      updatedAt: null,
-      publishedAt: null,
-      exists: false,
-    }
+    return getLocalDraftAndPublishedPageLayout(pageKey, sectionKey)
   }
 
   const record = await prisma.pageSectionLayout.findUnique({

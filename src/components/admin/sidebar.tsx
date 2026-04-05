@@ -23,6 +23,7 @@ import {
   Image as ImageIcon,
   FileText,
   Bell,
+  Languages,
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
@@ -62,6 +63,11 @@ const menuItems = [
     title: 'Pages',
     icon: FileText,
     href: '/admin/pages',
+  },
+  {
+    title: 'Content',
+    icon: Languages,
+    href: '/admin/content',
   },
   {
     title: 'Notifications',
@@ -183,4 +189,3 @@ export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
     </motion.aside>
   )
 }
-

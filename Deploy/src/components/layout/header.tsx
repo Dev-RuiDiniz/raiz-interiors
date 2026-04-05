@@ -10,7 +10,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -105,19 +105,17 @@ export function Header({ dict, locale }: HeaderProps) {
           <div className="flex items-center justify-between h-20 lg:h-24">
             {/* Logo */}
             <Link href={`/${locale}`} className="relative z-50">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-              >
+              <div className="relative h-[42px] w-[118px] sm:h-[48px] sm:w-[134px] lg:h-[54px] lg:w-[151px]">
                 {/* White logo visible at top of home before scroll */}
                 <Image
                   src="/raizlogo_white.png"
                   alt="RAIZ Interiors"
-                  width={350}
-                  height={125}
+                  fill
+                  priority
+                  loading="eager"
+                  sizes="(min-width: 1024px) 151px, (min-width: 640px) 134px, 118px"
                   className={cn(
-                    'object-contain transition-all duration-500 absolute top-1/2 -translate-y-1/2',
+                    'object-contain transition-all duration-500',
                     useDarkText ? 'opacity-0 pointer-events-none' : 'opacity-100'
                   )}
                 />
@@ -125,25 +123,20 @@ export function Header({ dict, locale }: HeaderProps) {
                 <Image
                   src="/raizlogo_preta.png"
                   alt="RAIZ Interiors"
-                  width={350}
-                  height={125}
+                  fill
+                  sizes="(min-width: 1024px) 151px, (min-width: 640px) 134px, 118px"
                   className={cn(
                     'object-contain transition-all duration-500',
                     useDarkText ? 'opacity-100' : 'opacity-0'
                   )}
                 />
-              </motion.div>
+              </div>
             </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-12">
-              {navItems.map((item, index) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                >
+              {navItems.map((item) => (
+                <div key={item.href}>
                   <Link
                     href={item.href}
                     className={cn(
@@ -165,7 +158,7 @@ export function Header({ dict, locale }: HeaderProps) {
                       )}
                     />
                   </Link>
-                </motion.div>
+                </div>
               ))}
 
               <div
@@ -249,29 +242,12 @@ export function Header({ dict, locale }: HeaderProps) {
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 lg:hidden"
-          >
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'tween', duration: 0.4 }}
-              className="absolute inset-0 bg-white"
-            >
+          <div className="fixed inset-0 z-40 lg:hidden">
+            <div className="absolute inset-0 bg-white">
               <div className="flex flex-col items-center justify-center h-full">
                 <nav className="flex flex-col items-center gap-8">
-                  {navItems.map((item, index) => (
-                    <motion.div
-                      key={item.href}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 + index * 0.1 }}
-                    >
+                  {navItems.map((item) => (
+                    <div key={item.href}>
                       <Link
                         href={item.href}
                         className={cn(
@@ -283,12 +259,12 @@ export function Header({ dict, locale }: HeaderProps) {
                       >
                         {item.label}
                       </Link>
-                    </motion.div>
+                    </div>
                   ))}
                 </nav>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
       </AnimatePresence>
     </>

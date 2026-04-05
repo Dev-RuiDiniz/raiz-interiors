@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPublishedPageLayout } from '@/lib/cms/page-layout-service'
 
 export const runtime = 'nodejs'
+const publicCacheHeaders = {
+  'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=3600',
+}
 
 export async function GET(request: NextRequest) {
   const pageKey = request.nextUrl.searchParams.get('pageKey')
@@ -19,5 +22,5 @@ export async function GET(request: NextRequest) {
     layout: result.layout,
     publishedAt: result.publishedAt,
     exists: result.exists,
-  })
+  }, { headers: publicCacheHeaders })
 }

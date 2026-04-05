@@ -1,146 +1,141 @@
-/*
-Arquivo: src/app/admin/page.tsx
-Objetivo: Arquivo de codigo da aplicacao.
-Guia rapido: consulte imports no topo, depois tipos/constantes, e por fim a exportacao principal.
-*/
-
 'use client'
 
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import {
-  FolderKanban,
-  Users,
-  Mail,
-  Eye,
-  TrendingUp,
-  TrendingDown,
-  ArrowRight,
-  Calendar,
-  Clock,
-} from 'lucide-react'
+import { ArrowRight, Calendar, FolderKanban, Globe, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
-const stats = [
-  {
-    title: 'Total Projects',
-    value: '24',
-    change: '+3',
-    trend: 'up',
-    icon: FolderKanban,
-    color: 'bg-blue-500',
-  },
-  {
-    title: 'Page Views',
-    value: '12.5K',
-    change: '+18%',
-    trend: 'up',
-    icon: Eye,
-    color: 'bg-emerald-500',
-  },
-  {
-    title: 'Contacts',
-    value: '48',
-    change: '+12',
-    trend: 'up',
-    icon: Mail,
-    color: 'bg-amber-500',
-  },
-  {
-    title: 'Subscribers',
-    value: '892',
-    change: '+24',
-    trend: 'up',
-    icon: Users,
-    color: 'bg-purple-500',
-  },
-]
+type AdminProject = {
+  id: string
+  title: string
+  slug: string
+  status: 'PUBLISHED' | 'DRAFT' | 'WORK_IN_PROGRESS' | 'COMING_SOON'
+  updatedAt: string
+}
 
-const recentContacts = [
-  {
-    id: 1,
-    name: 'Maria Silva',
-    email: 'maria@email.com',
-    subject: 'Project Inquiry',
-    time: '2 hours ago',
-  },
-  {
-    id: 2,
-    name: 'John Doe',
-    email: 'john@email.com',
-    subject: 'Interior Design',
-    time: '5 hours ago',
-  },
-  {
-    id: 3,
-    name: 'Ana Costa',
-    email: 'ana@email.com',
-    subject: 'Consultation Request',
-    time: '1 day ago',
-  },
-]
+type AdminService = {
+  id: string
+  title: string
+  slug: string
+  status: 'PUBLISHED' | 'DRAFT' | 'WORK_IN_PROGRESS' | 'COMING_SOON'
+  active: boolean
+  updatedAt: string
+}
 
-const recentProjects = [
-  {
-    id: 1,
-    title: 'Beach House in Troia',
-    status: 'In Progress',
-    statusColor: 'bg-amber-500',
-    updated: '2 hours ago',
-  },
-  {
-    id: 2,
-    title: 'Summer House in Comporta',
-    status: 'Published',
-    statusColor: 'bg-emerald-500',
-    updated: '1 day ago',
-  },
-  {
-    id: 3,
-    title: 'Contemporary City House',
-    status: 'Draft',
-    statusColor: 'bg-stone-400',
-    updated: '3 days ago',
-  },
-]
+function formatDateTime(iso: string) {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return '-'
+  return date.toLocaleString()
+}
 
-const activities = [
-  {
-    id: 1,
-    action: 'New contact form submission',
-    detail: 'from maria@email.com',
-    time: '2 hours ago',
-  },
-  {
-    id: 2,
-    action: 'Project updated',
-    detail: 'Beach House in Troia',
-    time: '3 hours ago',
-  },
-  {
-    id: 3,
-    action: 'New newsletter subscriber',
-    detail: 'john@example.com',
-    time: '5 hours ago',
-  },
-  {
-    id: 4,
-    action: 'Settings changed',
-    detail: 'Site metadata updated',
-    time: '1 day ago',
-  },
-]
+function statusLabel(status: AdminProject['status'] | AdminService['status']) {
+  return status.replace(/_/g, ' ')
+}
+
+function statusDotClass(status: AdminProject['status'] | AdminService['status']) {
+  if (status === 'PUBLISHED') return 'bg-emerald-500'
+  if (status === 'WORK_IN_PROGRESS') return 'bg-amber-500'
+  if (status === 'COMING_SOON') return 'bg-blue-500'
+  return 'bg-stone-400'
+}
 
 export default function AdminDashboard() {
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [projects, setProjects] = useState<AdminProject[]>([])
+  const [services, setServices] = useState<AdminService[]>([])
+
+  useEffect(() => {
+    let active = true
+
+    async function loadDashboard() {
+      setLoading(true)
+      setLoadError(null)
+      try {
+        const [projectsResponse, servicesResponse] = await Promise.all([
+          fetch('/api/admin/projects', { cache: 'no-store' }),
+          fetch('/api/admin/services', { cache: 'no-store' }),
+        ])
+
+        if (!projectsResponse.ok || !servicesResponse.ok) {
+          throw new Error('Nao foi possivel carregar dados do dashboard.')
+        }
+
+        const projectsData = (await projectsResponse.json()) as AdminProject[]
+        const servicesData = (await servicesResponse.json()) as AdminService[]
+
+        if (!active) return
+        setProjects(Array.isArray(projectsData) ? projectsData : [])
+        setServices(Array.isArray(servicesData) ? servicesData : [])
+      } catch (error) {
+        if (!active) return
+        setLoadError(error instanceof Error ? error.message : 'Erro ao carregar dashboard.')
+        setProjects([])
+        setServices([])
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    void loadDashboard()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const stats = useMemo(() => {
+    const publishedProjects = projects.filter((project) => project.status === 'PUBLISHED').length
+    const activeServices = services.filter((service) => service.active).length
+
+    return [
+      {
+        title: 'Total Projects',
+        value: projects.length,
+        icon: FolderKanban,
+      },
+      {
+        title: 'Published Projects',
+        value: publishedProjects,
+        icon: FolderKanban,
+      },
+      {
+        title: 'Total Services',
+        value: services.length,
+        icon: Globe,
+      },
+      {
+        title: 'Active Services',
+        value: activeServices,
+        icon: Globe,
+      },
+    ]
+  }, [projects, services])
+
+  const recentProjects = useMemo(
+    () =>
+      [...projects]
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+        .slice(0, 6),
+    [projects]
+  )
+
+  const recentServices = useMemo(
+    () =>
+      [...services]
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+        .slice(0, 6),
+    [services]
+  )
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-cormorant text-2xl lg:text-3xl font-light text-stone-900 dark:text-white">
             Dashboard
           </h1>
           <p className="font-inter text-sm text-stone-500 dark:text-stone-400 mt-1">
-            Welcome back! Here's what's happening with your site.
+            Dados reais do conteudo publicado e em edicao.
           </p>
         </div>
         <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
@@ -156,192 +151,140 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => (
-          <motion.div
-            key={stat.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
-            className="bg-white dark:bg-stone-900 rounded-xl p-5 border border-stone-200 dark:border-stone-800"
-          >
-            <div className="flex items-start justify-between">
-              <div className={`w-10 h-10 ${stat.color} rounded-lg flex items-center justify-center`}>
-                <stat.icon size={20} className="text-white" />
-              </div>
-              <div className={`flex items-center gap-1 font-inter text-xs ${
-                stat.trend === 'up' ? 'text-emerald-500' : 'text-red-500'
-              }`}>
-                {stat.trend === 'up' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-                {stat.change}
-              </div>
-            </div>
-            <div className="mt-4">
-              <p className="font-inter text-2xl font-semibold text-stone-900 dark:text-white">
-                {stat.value}
-              </p>
-              <p className="font-inter text-sm text-stone-500 dark:text-stone-400 mt-1">
-                {stat.title}
-              </p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+      {loadError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {loadError}
+        </div>
+      )}
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Contacts */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.4 }}
-          className="lg:col-span-2 bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800"
-        >
-          <div className="p-5 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between">
-            <h2 className="font-inter text-sm font-medium text-stone-900 dark:text-white">
-              Recent Contacts
-            </h2>
-            <Link
-              href="/admin/contacts"
-              className="flex items-center gap-1 font-inter text-xs text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors"
-            >
-              View all <ArrowRight size={12} />
-            </Link>
+      {loading && (
+        <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 py-10">
+          <div className="flex items-center justify-center gap-2 text-stone-500 dark:text-stone-400">
+            <Loader2 size={18} className="animate-spin" />
+            A carregar dados do dashboard...
           </div>
-          <div className="divide-y divide-stone-100 dark:divide-stone-800">
-            {recentContacts.map((contact) => (
-              <div
-                key={contact.id}
-                className="p-4 hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors"
+        </div>
+      )}
+
+      {!loading && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={stat.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.08 }}
+                className="bg-white dark:bg-stone-900 rounded-xl p-5 border border-stone-200 dark:border-stone-800"
               >
                 <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-inter text-sm font-medium text-stone-900 dark:text-white">
-                      {contact.name}
-                    </p>
-                    <p className="font-inter text-xs text-stone-500 dark:text-stone-400">
-                      {contact.email}
-                    </p>
-                    <p className="font-inter text-xs text-stone-400 dark:text-stone-500 mt-1">
-                      {contact.subject}
-                    </p>
+                  <div className="w-10 h-10 bg-stone-100 dark:bg-stone-800 rounded-lg flex items-center justify-center">
+                    <stat.icon size={20} className="text-stone-600 dark:text-stone-400" />
                   </div>
-                  <span className="font-inter text-[10px] text-stone-400 flex items-center gap-1">
-                    <Clock size={10} />
-                    {contact.time}
-                  </span>
                 </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Activity Feed */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.5 }}
-          className="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800"
-        >
-          <div className="p-5 border-b border-stone-200 dark:border-stone-800">
-            <h2 className="font-inter text-sm font-medium text-stone-900 dark:text-white">
-              Recent Activity
-            </h2>
-          </div>
-          <div className="p-4 space-y-4">
-            {activities.map((activity) => (
-              <div key={activity.id} className="flex gap-3">
-                <div className="w-2 h-2 mt-1.5 bg-stone-300 dark:bg-stone-600 rounded-full shrink-0" />
-                <div>
-                  <p className="font-inter text-sm text-stone-900 dark:text-white">
-                    {activity.action}
+                <div className="mt-4">
+                  <p className="font-inter text-2xl font-semibold text-stone-900 dark:text-white">
+                    {stat.value}
                   </p>
-                  <p className="font-inter text-xs text-stone-500 dark:text-stone-400">
-                    {activity.detail}
-                  </p>
-                  <p className="font-inter text-[10px] text-stone-400 dark:text-stone-500 mt-0.5">
-                    {activity.time}
+                  <p className="font-inter text-sm text-stone-500 dark:text-stone-400 mt-1">
+                    {stat.title}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </motion.div>
-      </div>
 
-      {/* Projects Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.6 }}
-        className="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800"
-      >
-        <div className="p-5 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between">
-          <h2 className="font-inter text-sm font-medium text-stone-900 dark:text-white">
-            Recent Projects
-          </h2>
-          <Link
-            href="/admin/projects"
-            className="flex items-center gap-1 font-inter text-xs text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors"
-          >
-            View all <ArrowRight size={12} />
-          </Link>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-stone-100 dark:border-stone-800">
-                <th className="px-5 py-3 text-left font-inter text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">
-                  Project
-                </th>
-                <th className="px-5 py-3 text-left font-inter text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-5 py-3 text-left font-inter text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">
-                  Last Updated
-                </th>
-                <th className="px-5 py-3 text-right font-inter text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
-              {recentProjects.map((project) => (
-                <tr
-                  key={project.id}
-                  className="hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors"
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800"
+            >
+              <div className="p-5 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between">
+                <h2 className="font-inter text-sm font-medium text-stone-900 dark:text-white">
+                  Recent Projects
+                </h2>
+                <Link
+                  href="/admin/projects"
+                  className="flex items-center gap-1 font-inter text-xs text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors"
                 >
-                  <td className="px-5 py-4">
-                    <p className="font-inter text-sm text-stone-900 dark:text-white">
-                      {project.title}
-                    </p>
-                  </td>
-                  <td className="px-5 py-4">
-                    <span className="inline-flex items-center gap-1.5">
-                      <span className={`w-2 h-2 rounded-full ${project.statusColor}`} />
-                      <span className="font-inter text-xs text-stone-600 dark:text-stone-400">
-                        {project.status}
+                  View all <ArrowRight size={12} />
+                </Link>
+              </div>
+              <div className="divide-y divide-stone-100 dark:divide-stone-800">
+                {recentProjects.length === 0 && (
+                  <div className="p-5 font-inter text-sm text-stone-500 dark:text-stone-400">
+                    Sem projetos para mostrar.
+                  </div>
+                )}
+                {recentProjects.map((project) => (
+                  <div key={project.id} className="p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="font-inter text-sm text-stone-900 dark:text-white">{project.title}</p>
+                        <p className="font-inter text-xs text-stone-500 dark:text-stone-400">
+                          {formatDateTime(project.updatedAt)}
+                        </p>
+                      </div>
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className={`w-2 h-2 rounded-full ${statusDotClass(project.status)}`} />
+                        <span className="font-inter text-xs text-stone-600 dark:text-stone-400">
+                          {statusLabel(project.status)}
+                        </span>
                       </span>
-                    </span>
-                  </td>
-                  <td className="px-5 py-4">
-                    <span className="font-inter text-xs text-stone-500 dark:text-stone-400">
-                      {project.updated}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 text-right">
-                    <button className="font-inter text-xs text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors">
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </motion.div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.25 }}
+              className="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800"
+            >
+              <div className="p-5 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between">
+                <h2 className="font-inter text-sm font-medium text-stone-900 dark:text-white">
+                  Recent Services
+                </h2>
+                <Link
+                  href="/admin/services"
+                  className="flex items-center gap-1 font-inter text-xs text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors"
+                >
+                  View all <ArrowRight size={12} />
+                </Link>
+              </div>
+              <div className="divide-y divide-stone-100 dark:divide-stone-800">
+                {recentServices.length === 0 && (
+                  <div className="p-5 font-inter text-sm text-stone-500 dark:text-stone-400">
+                    Sem servicos para mostrar.
+                  </div>
+                )}
+                {recentServices.map((service) => (
+                  <div key={service.id} className="p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="font-inter text-sm text-stone-900 dark:text-white">{service.title}</p>
+                        <p className="font-inter text-xs text-stone-500 dark:text-stone-400">
+                          {formatDateTime(service.updatedAt)}
+                        </p>
+                      </div>
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className={`w-2 h-2 rounded-full ${statusDotClass(service.status)}`} />
+                        <span className="font-inter text-xs text-stone-600 dark:text-stone-400">
+                          {statusLabel(service.status)}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
-

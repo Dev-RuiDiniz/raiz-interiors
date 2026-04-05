@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { getAdminSession } from '@/lib/admin-auth'
 import { servicePayloadSchema } from '@/lib/cms/admin-schemas'
+import { defaultServices } from '@/lib/cms/default-services'
 
 export const runtime = 'nodejs'
 
@@ -17,13 +18,10 @@ interface RouteParams {
   params: Promise<{ id: string }>
 }
 
-export async function GET(_request: NextRequest, { params }: RouteParams) {
-  const session = await getAdminSession()
-  if (!session) return unauthorized()
-  if (!prisma) return notConfigured()
+async function resolveServiceByIdOrFallbackSlug(id: string) {
+  if (!prisma) return null
 
-  const { id } = await params
-  const service = await prisma.service.findUnique({
+  const byId = await prisma.service.findUnique({
     where: { id },
     include: {
       images: {
@@ -31,6 +29,29 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
       },
     },
   })
+
+  if (byId) return byId
+
+  const fallbackSlug = defaultServices.find((service) => service.id === id)?.slug
+  if (!fallbackSlug) return null
+
+  return prisma.service.findUnique({
+    where: { slug: fallbackSlug },
+    include: {
+      images: {
+        orderBy: { order: 'asc' },
+      },
+    },
+  })
+}
+
+export async function GET(_request: NextRequest, { params }: RouteParams) {
+  const session = await getAdminSession()
+  if (!session) return unauthorized()
+  if (!prisma) return notConfigured()
+
+  const { id } = await params
+  const service = await resolveServiceByIdOrFallbackSlug(id)
 
   if (!service) {
     return NextResponse.json({ error: 'Service not found.' }, { status: 404 })
@@ -56,9 +77,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 
   const payload = parsed.data
-  const service = await prisma.service.update({
-    where: { id },
-    data: {
+
+  try {
+    const existing = await resolveServiceByIdOrFallbackSlug(id)
+
+    const data = {
       slug: payload.slug,
       title: payload.title,
       subtitle: payload.subtitle,
@@ -69,15 +92,35 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       order: payload.order,
       status: payload.status,
       active: payload.active,
-    },
-    include: {
-      images: {
-        orderBy: { order: 'asc' },
-      },
-    },
-  })
+    }
 
-  return NextResponse.json(service)
+    const service = existing
+      ? await prisma.service.update({
+          where: { id: existing.id },
+          data,
+          include: {
+            images: {
+              orderBy: { order: 'asc' },
+            },
+          },
+        })
+      : await prisma.service.create({
+          data,
+          include: {
+            images: {
+              orderBy: { order: 'asc' },
+            },
+          },
+        })
+
+    return NextResponse.json(service)
+  } catch (error) {
+    console.error('Failed to save service:', error)
+    return NextResponse.json(
+      { error: 'Failed to save service.' },
+      { status: 500 }
+    )
+  }
 }
 
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
@@ -86,9 +129,23 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   if (!prisma) return notConfigured()
 
   const { id } = await params
-  await prisma.service.delete({
-    where: { id },
-  })
 
-  return NextResponse.json({ success: true })
+  try {
+    const existing = await resolveServiceByIdOrFallbackSlug(id)
+    if (!existing) {
+      return NextResponse.json({ error: 'Service not found.' }, { status: 404 })
+    }
+
+    await prisma.service.delete({
+      where: { id: existing.id },
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Failed to delete service:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete service.' },
+      { status: 500 }
+    )
+  }
 }

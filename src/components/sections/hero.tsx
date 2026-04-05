@@ -52,10 +52,9 @@ export function Hero({
   }, [videoUrl])
 
   const currentSlide = safeSlides[currentIndex] || safeSlides[0]
+  const nextIndex = (currentIndex + 1) % safeSlides.length
   const shouldRenderSlide = (slideIndex: number) => {
-    const prevIndex = (currentIndex - 1 + safeSlides.length) % safeSlides.length
-    const nextIndex = (currentIndex + 1) % safeSlides.length
-    return slideIndex === currentIndex || slideIndex === prevIndex || slideIndex === nextIndex
+    return slideIndex === currentIndex || slideIndex === nextIndex
   }
 
   return (
@@ -88,7 +87,7 @@ export function Hero({
                     src={slide.image}
                     alt={stripHtml(slide.line1)}
                     fill
-                    priority={index === 0 || index === currentIndex}
+                    priority={index === 0}
                     sizes="100vw"
                     className="object-cover scale-105"
                     onLoad={() => index === 0 && setIsLoaded(true)}

@@ -54,7 +54,7 @@ export function InstagramFeed({ dict }: InstagramFeedProps) {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await fetch('/api/instagram/posts?limit=12', { cache: 'no-store' })
+        const response = await fetch('/api/instagram/posts?limit=12')
         if (response.ok) {
           const data = await response.json()
           if (data && data.length > 0) {

@@ -1,7 +1,7 @@
 import { getDictionary } from '@/i18n/get-dictionary'
 import { Locale } from '@/i18n/config'
 import { ProjectDetailClient } from './project-detail-client'
-import { defaultProjectDetails, defaultProjects } from '@/lib/cms/default-projects'
+import { getProjectDetailContent, getProjectsContent } from '@/lib/cms/content-service'
 
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>
@@ -43,17 +43,25 @@ function localizeClient(locale: Locale, value: string) {
   return localeMap[value as keyof typeof localeMap] || value
 }
 
-function getAdjacentProjects(slug: string, dict: any) {
-  const index = defaultProjects.findIndex((project) => project.slug === slug)
-  
-  const getLocalizedTitle = (project: (typeof defaultProjects)[number] | null) => {
+const hiddenProjectSlugs = new Set(['young-soul-city-apartment'])
+
+type ProjectSummary = {
+  slug: string
+  title: string
+}
+
+function getAdjacentProjects(slug: string, projects: ProjectSummary[], dict: any) {
+  const visibleProjects = projects.filter((project) => !hiddenProjectSlugs.has(project.slug))
+  const index = visibleProjects.findIndex((project) => project.slug === slug)
+
+  const getLocalizedTitle = (project: ProjectSummary | null) => {
     if (!project) return null
     const projectDict = dict.projects.list[project.slug as keyof typeof dict.projects.list]
     return projectDict?.title || project.title
   }
 
-  const prev = index > 0 ? defaultProjects[index - 1] : null
-  const next = index >= 0 && index < defaultProjects.length - 1 ? defaultProjects[index + 1] : null
+  const prev = index > 0 ? visibleProjects[index - 1] : null
+  const next = index >= 0 && index < visibleProjects.length - 1 ? visibleProjects[index + 1] : null
 
   return {
     prev: prev ? { slug: prev.slug, title: getLocalizedTitle(prev)! } : null,
@@ -65,28 +73,48 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const { locale, slug } = await params
   const localeValue = locale as Locale
   const dict = await getDictionary(localeValue)
+  const preferDictionary = localeValue === 'pt'
+  const [baseProject, projects] = await Promise.all([
+    getProjectDetailContent(slug),
+    getProjectsContent(),
+  ])
 
-  // Get base data
-  const baseProject = defaultProjectDetails[slug] || defaultProjectDetails['summer-house-comporta']
-  
-  // Get localized content from dictionary
   const listDict = dict.projects.list[slug as keyof typeof dict.projects.list]
   const detailDict = dict.projects.detail.items[slug as keyof typeof dict.projects.detail.items] as any
 
   const localizedProject = {
     ...baseProject,
     images: baseProject.images,
-    title: listDict?.title || baseProject.title,
-    subtitle: listDict?.subtitle !== undefined ? listDict.subtitle : baseProject.subtitle,
-    location: listDict?.location || baseProject.location,
+    title: preferDictionary ? listDict?.title || baseProject.title : baseProject.title || listDict?.title || '',
+    subtitle:
+      preferDictionary
+        ? listDict?.subtitle !== undefined
+          ? listDict.subtitle
+          : baseProject.subtitle
+        : baseProject.subtitle || listDict?.subtitle || '',
+    location: preferDictionary ? listDict?.location || baseProject.location : baseProject.location || listDict?.location || '',
     category: localizeCategory(localeValue, baseProject.category),
     client: localizeClient(localeValue, baseProject.client),
-    description: detailDict?.description || baseProject.description,
-    credits: detailDict?.credits !== undefined ? detailDict.credits : baseProject.credits,
-    photography: detailDict?.photography !== undefined ? detailDict.photography : baseProject.photography,
+    description: preferDictionary ? detailDict?.description || baseProject.description : baseProject.description || detailDict?.description || '',
+    credits:
+      preferDictionary
+        ? detailDict?.credits !== undefined
+          ? detailDict.credits
+          : baseProject.credits
+        : baseProject.credits || detailDict?.credits || '',
+    photography:
+      preferDictionary
+        ? detailDict?.photography !== undefined
+          ? detailDict.photography
+          : baseProject.photography
+        : baseProject.photography || detailDict?.photography || '',
   }
 
-  const adjacent = getAdjacentProjects(slug, dict)
+  const adjacent = getAdjacentProjects(
+    slug,
+    projects.map((project) => ({ slug: project.slug, title: project.title })),
+    dict
+  )
 
   return (
     <ProjectDetailClient

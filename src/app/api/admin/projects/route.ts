@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { getAdminSession } from '@/lib/admin-auth'
 import { projectPayloadSchema } from '@/lib/cms/admin-schemas'
+import { createLocalProject, getLocalProjects } from '@/lib/cms/local-project-store'
 
 export const runtime = 'nodejs'
 
@@ -16,7 +17,10 @@ function notConfigured() {
 export async function GET(request: NextRequest) {
   const session = await getAdminSession()
   if (!session) return unauthorized()
-  if (!prisma) return notConfigured()
+  if (!prisma) {
+    const projects = await getLocalProjects()
+    return NextResponse.json(projects)
+  }
 
   const includeImages = request.nextUrl.searchParams.get('includeImages') === 'true'
 
@@ -37,7 +41,6 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const session = await getAdminSession()
   if (!session) return unauthorized()
-  if (!prisma) return notConfigured()
 
   const body = await request.json().catch(() => null)
   const parsed = projectPayloadSchema.safeParse(body)
@@ -50,6 +53,11 @@ export async function POST(request: NextRequest) {
   }
 
   const payload = parsed.data
+
+  if (!prisma) {
+    const project = await createLocalProject(payload)
+    return NextResponse.json(project, { status: 201 })
+  }
 
   const project = await prisma.project.create({
     data: {

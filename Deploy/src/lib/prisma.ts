@@ -18,7 +18,11 @@ const createPrismaClient = () => {
     return null
   }
   try {
-    const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+    const schema = process.env.DATABASE_SCHEMA?.trim()
+    const adapter = new PrismaPg(
+      { connectionString: process.env.DATABASE_URL },
+      schema ? { schema } : undefined
+    )
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return new PrismaClient({ adapter } as any)
   } catch (e) {

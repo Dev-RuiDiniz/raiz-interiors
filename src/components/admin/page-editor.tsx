@@ -1,24 +1,279 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, CheckCircle2, Eye, Loader2, RefreshCw, Save, Upload } from 'lucide-react'
+import { ArrowLeft, Bold, CaseLower, CaseSensitive, CaseUpper, CheckCircle2, Eye, Italic, Loader2, RefreshCw, Save, Upload } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { GalleryLayoutField } from '@/components/admin/gallery-layout-field'
+import { DictionaryEditor } from '@/components/admin/dictionary-editor'
 import { adminPageEditorConfigs } from '@/lib/admin-page-configs'
 import type { AdminPageEditorConfig } from '@/lib/admin-page-configs'
+import enDictionary from '@/i18n/dictionaries/en.json'
+import ptDictionary from '@/i18n/dictionaries/pt.json'
+import { createDictionaryDiff, deepMergeDictionary, type JsonValue } from '@/lib/cms/dictionary-utils'
 
 interface PageEditorProps {
   pageId: AdminPageEditorConfig['pageId']
 }
 
+type Locale = 'en' | 'pt'
+const localeOptions: Array<{ id: Locale; label: string }> = [
+  { id: 'en', label: 'English' },
+  { id: 'pt', label: 'Português' },
+]
+
+function getDictionaryScope(pageId: AdminPageEditorConfig['pageId']) {
+  if (pageId === 'home') return ['home']
+  if (pageId === 'projects') return ['projects']
+  if (pageId === 'services') return ['services']
+  if (pageId === 'about') return ['about']
+  if (pageId === 'contact') return ['contact']
+  return ['legal', 'privacy']
+}
+
+function getNestedValue(root: unknown, path: string[]) {
+  return path.reduce<unknown>((current, segment) => {
+    if (!current || typeof current !== 'object' || Array.isArray(current)) return undefined
+    return (current as Record<string, unknown>)[segment]
+  }, root)
+}
+
+function setNestedValue(root: Record<string, unknown>, path: string[], nextValue: JsonValue): Record<string, unknown> {
+  if (!path.length) return root
+  const [head, ...tail] = path
+  if (!tail.length) {
+    return { ...root, [head]: nextValue }
+  }
+  const current = root[head]
+  return {
+    ...root,
+    [head]:
+      current && typeof current === 'object' && !Array.isArray(current)
+        ? setNestedValue(current as Record<string, unknown>, tail, nextValue)
+        : setNestedValue({}, tail, nextValue),
+  }
+}
+
+function wrapSelection(
+  text: string,
+  selectionStart: number,
+  selectionEnd: number,
+  before: string,
+  after: string
+) {
+  const start = Math.max(0, selectionStart)
+  const end = Math.max(start, selectionEnd)
+  return text.slice(0, start) + before + text.slice(start, end) + after + text.slice(end)
+}
+
+function transformSelection(text: string, selectionStart: number, selectionEnd: number, mode: 'upper' | 'lower') {
+  const start = Math.max(0, selectionStart)
+  const end = Math.max(start, selectionEnd)
+  const selected = text.slice(start, end)
+  const transformed = mode === 'upper' ? selected.toUpperCase() : selected.toLowerCase()
+  return text.slice(0, start) + transformed + text.slice(end)
+}
+
+function RichTextField({
+  label,
+  value,
+  onChange,
+  multiline = false,
+  helper,
+}: {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  multiline?: boolean
+  helper?: string
+}) {
+  const [open, setOpen] = useState(false)
+  const [fontFamily, setFontFamily] = useState('inherit')
+  const [fontSize, setFontSize] = useState('16')
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null)
+
+  const applyMarkup = (before: string, after: string) => {
+    const el = inputRef.current
+    if (!el) return
+    onChange(wrapSelection(value, el.selectionStart ?? 0, el.selectionEnd ?? 0, before, after))
+  }
+
+  const applyTransform = (mode: 'upper' | 'lower') => {
+    const el = inputRef.current
+    if (!el) return
+    onChange(transformSelection(value, el.selectionStart ?? 0, el.selectionEnd ?? 0, mode))
+  }
+
+  const applyFontStyle = () => {
+    const el = inputRef.current
+    if (!el) return
+    const start = el.selectionStart ?? 0
+    const end = el.selectionEnd ?? 0
+    if (start === end) return
+    onChange(
+      wrapSelection(
+        value,
+        start,
+        end,
+        `<span style="font-family:${fontFamily}; font-size:${fontSize}px">`,
+        '</span>'
+      )
+    )
+  }
+
+  return (
+    <>
+      <div className="rounded-[1.75rem] border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-800 dark:bg-stone-950/70">
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div className="space-y-1">
+            <Label className="text-[11px] uppercase tracking-[0.22em] text-stone-500 dark:text-stone-400">
+              {label}
+            </Label>
+            {helper && <p className="font-inter text-xs text-stone-400 dark:text-stone-500">{helper}</p>}
+          </div>
+          <Button type="button" variant="outline" size="sm" onClick={() => setOpen(true)} className="h-9 rounded-full px-4">
+            Editar
+          </Button>
+        </div>
+
+        <div className="mb-3 flex flex-wrap gap-2">
+          <Button type="button" variant="outline" size="sm" onClick={() => applyMarkup('<strong>', '</strong>')}>
+            <Bold size={14} />
+            Negrito
+          </Button>
+          <Button type="button" variant="outline" size="sm" onClick={() => applyMarkup('<em>', '</em>')}>
+            <Italic size={14} />
+            Itálico
+          </Button>
+          <Button type="button" variant="outline" size="sm" onClick={() => applyTransform('upper')}>
+            <CaseUpper size={14} />
+            Maiúsculas
+          </Button>
+          <Button type="button" variant="outline" size="sm" onClick={() => applyTransform('lower')}>
+            <CaseLower size={14} />
+            Minúsculas
+          </Button>
+        </div>
+
+        {multiline ? (
+          <Textarea
+            ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+            rows={5}
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+          />
+        ) : (
+          <Input
+            ref={inputRef as React.RefObject<HTMLInputElement>}
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+          />
+        )}
+      </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-h-[92vh] w-[min(980px,calc(100vw-1.5rem))] overflow-hidden rounded-[2rem] border-stone-200 bg-white p-0 dark:border-stone-800 dark:bg-stone-950">
+          <div className="grid max-h-[92vh] lg:grid-cols-[1fr_300px]">
+            <div className="flex min-h-0 flex-col border-b border-stone-200 p-6 lg:border-b-0 lg:border-r dark:border-stone-800">
+              <DialogHeader className="mb-5 text-left">
+                <DialogTitle className="font-cormorant text-3xl text-stone-900 dark:text-white">{label}</DialogTitle>
+                {helper && <DialogDescription className="font-inter text-sm text-stone-500 dark:text-stone-400">{helper}</DialogDescription>}
+              </DialogHeader>
+
+              <div className="mb-4 flex flex-wrap gap-2 rounded-2xl border border-stone-200 bg-white p-3 dark:border-stone-800 dark:bg-stone-950/60">
+                <Button type="button" variant="outline" size="sm" onClick={() => applyMarkup('<strong>', '</strong>')}>
+                  <Bold size={14} />
+                  Negrito
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => applyMarkup('<em>', '</em>')}>
+                  <Italic size={14} />
+                  Itálico
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => applyTransform('upper')}>
+                  <CaseUpper size={14} />
+                  Maiúsculas
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => applyTransform('lower')}>
+                  <CaseLower size={14} />
+                  Minúsculas
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={applyFontStyle}>
+                  <CaseSensitive size={14} />
+                  Fonte
+                </Button>
+                <div className="ml-auto flex gap-2">
+                  <select
+                    value={fontFamily}
+                    onChange={(event) => setFontFamily(event.target.value)}
+                    className="h-10 rounded-full border border-stone-200 bg-white px-3 font-inter text-sm dark:border-stone-800 dark:bg-stone-950"
+                  >
+                    <option value="inherit">Fonte do site</option>
+                    <option value="Cormorant Garamond, serif">Cormorant</option>
+                    <option value="Inter, sans-serif">Inter</option>
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="Arial, sans-serif">Arial</option>
+                  </select>
+                  <select
+                    value={fontSize}
+                    onChange={(event) => setFontSize(event.target.value)}
+                    className="h-10 rounded-full border border-stone-200 bg-white px-3 font-inter text-sm dark:border-stone-800 dark:bg-stone-950"
+                  >
+                    <option value="12">12px</option>
+                    <option value="14">14px</option>
+                    <option value="16">16px</option>
+                    <option value="18">18px</option>
+                    <option value="20">20px</option>
+                  </select>
+                </div>
+              </div>
+
+              {multiline ? (
+                <Textarea
+                  ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+                  rows={22}
+                  value={value}
+                  onChange={(event) => onChange(event.target.value)}
+                  className="min-h-[56vh] flex-1 resize-none rounded-[1.5rem] border-stone-200 font-inter text-sm leading-7 dark:border-stone-800"
+                />
+              ) : (
+                <Input
+                  ref={inputRef as React.RefObject<HTMLInputElement>}
+                  value={value}
+                  onChange={(event) => onChange(event.target.value)}
+                  className="h-12 rounded-2xl border-stone-200 font-inter text-sm dark:border-stone-800"
+                />
+              )}
+            </div>
+            <div className="space-y-4 overflow-y-auto bg-stone-50 p-6 dark:bg-stone-900/40">
+              <div className="rounded-2xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-950/70">
+                <p className="font-inter text-[11px] uppercase tracking-[0.22em] text-stone-400 dark:text-stone-500">Preview</p>
+                <p className="mt-2 break-words font-inter text-sm leading-7 text-stone-700 dark:text-stone-300">
+                  {value || 'Campo vazio'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  )
+}
+
 export function PageEditor({ pageId }: PageEditorProps) {
   const config = adminPageEditorConfigs[pageId]
+  const dictionaryScope = useMemo(() => getDictionaryScope(pageId), [pageId])
   const allFields = useMemo(() => config.sections.flatMap((section) => section.fields), [config.sections])
   const galleryFields = useMemo(
     () => allFields.filter((field) => field.type === 'gallery_layout' && field.pageKey && field.sectionKey),
@@ -29,7 +284,7 @@ export function PageEditor({ pageId }: PageEditorProps) {
   const initialValues = useMemo(
     () =>
       allFields.reduce<Record<string, string>>((acc, field) => {
-        acc[field.id] = field.defaultValue || ''
+        acc[field.id] = field.type === 'gallery_layout' ? field.defaultValue || '' : ''
         return acc
       }, {}),
     [allFields]
@@ -47,11 +302,22 @@ export function PageEditor({ pageId }: PageEditorProps) {
   const [previewViewport, setPreviewViewport] = useState<'desktop' | 'mobile'>('desktop')
   const [previewNonce, setPreviewNonce] = useState(0)
   const [previewLoading, setPreviewLoading] = useState(true)
+  const [locale, setLocale] = useState<Locale>('en')
+  const [dictionaryDraft, setDictionaryDraft] = useState<Record<string, unknown> | null>(null)
+  const [dictionaryLoading, setDictionaryLoading] = useState(true)
+  const [dictionarySaving, setDictionarySaving] = useState(false)
+  const [dictionaryMessage, setDictionaryMessage] = useState<string | null>(null)
+  const [dictionaryMessageType, setDictionaryMessageType] = useState<'success' | 'error'>('success')
 
   const previewSrc = useMemo(() => {
     const separator = config.publicPath.includes('?') ? '&' : '?'
     return `${config.publicPath}${separator}preview_ts=${previewNonce}`
   }, [config.publicPath, previewNonce])
+
+  const baseDictionary = useMemo(
+    () => (locale === 'en' ? (enDictionary as Record<string, unknown>) : (ptDictionary as Record<string, unknown>)),
+    [locale]
+  )
 
   useEffect(() => {
     let active = true
@@ -137,6 +403,39 @@ export function PageEditor({ pageId }: PageEditorProps) {
   }, [galleryFields, initialValues, pageId, regularFields.length])
 
   useEffect(() => {
+    let active = true
+
+    async function loadDictionary() {
+      setDictionaryLoading(true)
+      setDictionaryMessage(null)
+      try {
+        const response = await fetch(`/api/admin/content-dictionary?locale=${locale}`, {
+          cache: 'no-store',
+        })
+        const data = (await response.json()) as { draft?: Record<string, unknown>; error?: string }
+        if (!response.ok) {
+          throw new Error(data.error || 'Falha ao carregar textos.')
+        }
+        if (!active) return
+        const merged = deepMergeDictionary(baseDictionary, data.draft || {})
+        setDictionaryDraft(merged as Record<string, unknown>)
+      } catch (error) {
+        if (!active) return
+        setDictionaryDraft(baseDictionary)
+        setDictionaryMessageType('error')
+        setDictionaryMessage(error instanceof Error ? error.message : 'Falha ao carregar textos.')
+      } finally {
+        if (active) setDictionaryLoading(false)
+      }
+    }
+
+    void loadDictionary()
+    return () => {
+      active = false
+    }
+  }, [baseDictionary, locale])
+
+  useEffect(() => {
     setPreviewLoading(true)
   }, [previewSrc])
 
@@ -173,8 +472,37 @@ export function PageEditor({ pageId }: PageEditorProps) {
     }
   }
 
+  const dictionarySlice = useMemo(() => {
+    if (!dictionaryDraft) return null
+    return getNestedValue(dictionaryDraft, dictionaryScope)
+  }, [dictionaryDraft, dictionaryScope])
+
+  const onDictionaryChange = (nextValue: JsonValue) => {
+    setDictionaryDraft((current) => {
+      if (!current) return current
+      return setNestedValue(current, dictionaryScope, nextValue)
+    })
+  }
+
+  const persistDictionaryDraft = async () => {
+    if (!dictionaryDraft) return
+    const diff = createDictionaryDiff(baseDictionary, dictionaryDraft)
+    const override = (diff ?? {}) as Record<string, unknown>
+
+    const response = await fetch('/api/admin/content-dictionary', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ locale, draft: override }),
+    })
+    const data = (await response.json()) as { error?: string }
+    if (!response.ok) {
+      throw new Error(data.error || 'Não foi possível guardar textos da página.')
+    }
+  }
+
   const persistDraft = async () => {
     try {
+      await persistDictionaryDraft()
       if (regularFields.length > 0) {
         const regularValues = regularFields.reduce<Record<string, string>>((acc, field) => {
           acc[field.id] = values[field.id] || ''
@@ -246,6 +574,7 @@ export function PageEditor({ pageId }: PageEditorProps) {
     }
 
     try {
+      await persistDictionaryDraft()
       if (regularFields.length > 0) {
         const response = await fetch('/api/admin/page-settings', {
           method: 'POST',
@@ -285,6 +614,21 @@ export function PageEditor({ pageId }: PageEditorProps) {
       setFeedbackMessage(error instanceof Error ? error.message : 'Erro ao publicar alterações.')
     } finally {
       setPublishing(false)
+    }
+  }
+
+  const saveDictionaryOnly = async () => {
+    setDictionarySaving(true)
+    setDictionaryMessage(null)
+    try {
+      await persistDictionaryDraft()
+      setDictionaryMessageType('success')
+      setDictionaryMessage('Textos guardados com sucesso.')
+    } catch (error) {
+      setDictionaryMessageType('error')
+      setDictionaryMessage(error instanceof Error ? error.message : 'Falha ao guardar textos.')
+    } finally {
+      setDictionarySaving(false)
     }
   }
 
@@ -463,6 +807,67 @@ export function PageEditor({ pageId }: PageEditorProps) {
         </div>
       </section>
 
+      <section className="space-y-4 rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-800 dark:bg-stone-900">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="font-cormorant text-2xl text-stone-900 dark:text-white">Textos do Site</h2>
+            <p className="font-inter text-sm text-stone-500 dark:text-stone-400">
+              Texto publicado desta página, incluindo slides, títulos e blocos editoriais.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {localeOptions.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => setLocale(option.id)}
+                className={`h-10 rounded-full px-4 text-xs font-inter uppercase tracking-[0.2em] ${
+                  locale === option.id
+                    ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900'
+                    : 'bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={saveDictionaryOnly}
+              disabled={dictionaryLoading || dictionarySaving}
+            >
+              {dictionarySaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+              Guardar textos
+            </Button>
+          </div>
+        </div>
+
+        {dictionaryMessage && (
+          <div
+            className={
+              dictionaryMessageType === 'success'
+                ? 'rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-900/20 dark:text-emerald-300'
+                : 'rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-900/20 dark:text-red-300'
+            }
+          >
+            {dictionaryMessage}
+          </div>
+        )}
+
+        {dictionaryLoading ? (
+          <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
+            <Loader2 size={16} className="animate-spin" />
+            Carregando textos...
+          </div>
+        ) : dictionarySlice ? (
+          <DictionaryEditor value={dictionarySlice as JsonValue} onChange={onDictionaryChange} />
+        ) : (
+          <div className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-500 dark:border-stone-800 dark:bg-stone-950/60 dark:text-stone-400">
+            Nenhum texto encontrado para esta página.
+          </div>
+        )}
+      </section>
+
       <div className="grid gap-4">
         {config.sections.map((section, sectionIndex) => (
           <motion.section
@@ -491,21 +896,20 @@ export function PageEditor({ pageId }: PageEditorProps) {
                     {field.label}
                   </Label>
                   {field.type === 'textarea' && (
-                    <Textarea
-                      id={field.id}
+                    <RichTextField
+                      label={field.label}
                       value={values[field.id] || ''}
-                      placeholder={field.placeholder}
-                      rows={6}
-                      onChange={(event) => onFieldChange(field.id, event.target.value)}
+                      helper={field.placeholder}
+                      multiline
+                      onChange={(nextValue) => onFieldChange(field.id, nextValue)}
                     />
                   )}
                   {(field.type === 'text' || field.type === 'url') && (
-                    <Input
-                      id={field.id}
-                      type={field.type === 'url' ? 'url' : 'text'}
+                    <RichTextField
+                      label={field.label}
                       value={values[field.id] || ''}
-                      placeholder={field.placeholder}
-                      onChange={(event) => onFieldChange(field.id, event.target.value)}
+                      helper={field.placeholder}
+                      onChange={(nextValue) => onFieldChange(field.id, nextValue)}
                     />
                   )}
                   {field.type === 'color' && (

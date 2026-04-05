@@ -29,7 +29,7 @@ export function PageEditor({ pageId }: PageEditorProps) {
   const initialValues = useMemo(
     () =>
       allFields.reduce<Record<string, string>>((acc, field) => {
-        acc[field.id] = field.defaultValue || ''
+        acc[field.id] = field.type === 'gallery_layout' ? field.defaultValue || '' : ''
         return acc
       }, {}),
     [allFields]

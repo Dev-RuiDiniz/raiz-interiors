@@ -153,7 +153,7 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
                         src={image}
                         alt={`${project.title} - Image ${index + 1}`}
                         fill
-                        sizes="(min-width: 1024px) 33vw, 50vw"
+                        sizes="(min-width: 1024px) 50vw, 100vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                       />
                       <div className="absolute inset-0 bg-gradient-to-b from-stone-950/5 via-transparent to-stone-950/20" />
@@ -193,6 +193,7 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
                 <SiteImage
                   src={project.images[activeImageIndex]}
                   alt={`${project.title} - Image ${activeImageIndex + 1}`}
+                  assetMode="original"
                   fill
                   priority
                   sizes="100vw"

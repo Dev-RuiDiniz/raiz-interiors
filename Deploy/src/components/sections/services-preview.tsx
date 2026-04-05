@@ -1,17 +1,9 @@
-/*
-Arquivo: src/components/sections/services-preview.tsx
-Objetivo: Secao de interface usada em paginas publicas.
-Guia rapido: consulte imports no topo, depois tipos/constantes, e por fim a exportacao principal.
-*/
-
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { ArtisticText } from '@/components/ui/artistic-text'
-import { defaultServices } from '@/lib/cms/default-services'
 
 import { Locale } from '@/i18n/config'
 
@@ -22,50 +14,15 @@ interface ServicesPreviewProps {
     highlightWords: string[]
     cta: string
   }
-  serviceTitles: Record<string, { title?: string }>
+  services: Array<{ slug: string; title: string }>
   locale: Locale
 }
 
-export function ServicesPreview({ dict, serviceTitles, locale }: ServicesPreviewProps) {
-  const [services, setServices] = useState(
-    defaultServices.map((service) => ({
-      title: serviceTitles[service.slug]?.title || service.title,
-      slug: service.slug,
-    }))
-  )
-
-  useEffect(() => {
-    let active = true
-
-    async function fetchServices() {
-      try {
-        const response = await fetch('/api/services', { cache: 'no-store' })
-        if (!response.ok) return
-        const data = (await response.json()) as Array<{ slug: string; title: string }>
-        if (active && Array.isArray(data) && data.length > 0) {
-          setServices(
-            data.map((service) => ({
-              slug: service.slug,
-              title: serviceTitles[service.slug]?.title || service.title,
-            }))
-          )
-        }
-      } catch {
-        // fallback mantém default
-      }
-    }
-
-    void fetchServices()
-    return () => {
-      active = false
-    }
-  }, [serviceTitles])
-
+export function ServicesPreview({ dict, services, locale }: ServicesPreviewProps) {
   return (
     <section className="bg-[#e3dfdc] py-24 lg:py-32">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left: Text */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -75,7 +32,7 @@ export function ServicesPreview({ dict, serviceTitles, locale }: ServicesPreview
             <span className="font-inter text-xs tracking-[0.3em] uppercase text-stone-500">
               {dict.label}
             </span>
-            
+
             <div className="mt-6">
               <ArtisticText
                 as="h2"
@@ -107,7 +64,6 @@ export function ServicesPreview({ dict, serviceTitles, locale }: ServicesPreview
             </motion.div>
           </motion.div>
 
-          {/* Right: Service List */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}

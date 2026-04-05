@@ -1,4 +1,5 @@
 import type { Locale } from './config'
+import { applyPublishedDictionaryOverrides } from '@/lib/cms/content-dictionary-service'
 
 const dictionaries = {
   en: () => import('./dictionaries/en.json').then((module) => module.default),
@@ -6,5 +7,6 @@ const dictionaries = {
 }
 
 export const getDictionary = async (locale: Locale) => {
-  return dictionaries[locale] ? dictionaries[locale]() : dictionaries.en()
+  const baseDictionary = await (dictionaries[locale] ? dictionaries[locale]() : dictionaries.en())
+  return applyPublishedDictionaryOverrides(locale, baseDictionary)
 }

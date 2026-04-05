@@ -9,6 +9,11 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 
 const nextAuthSecret = process.env.NEXTAUTH_SECRET
+const DEFAULT_ADMIN_EMAIL = 'admin@raiz-interiors.com'
+const CONFIGURED_ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim().toLowerCase()
+const ALLOWED_ADMIN_EMAILS = new Set(
+  [DEFAULT_ADMIN_EMAIL, CONFIGURED_ADMIN_EMAIL].filter((value): value is string => Boolean(value))
+)
 
 if (!nextAuthSecret) {
   console.warn(
@@ -20,7 +25,7 @@ if (!nextAuthSecret) {
 const ADMIN_USER = {
   id: '1',
   name: 'Admin',
-  email: 'admin@raiz-interiors.com',
+  email: CONFIGURED_ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL,
   // Senha: admin123 (hash bcrypt)
   password: '$2a$10$8K1p/a0dL1LXMIgoEDFrwOex5F3c.0P6T5Q5Q5Q5Q5Q5Q5Q5Q5Q5u',
 }
@@ -38,14 +43,16 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email and password are required')
         }
 
+        const normalizedEmail = credentials.email.trim().toLowerCase()
+
         // Verificar credenciais (temporário - depois usar Prisma)
-        if (credentials.email === ADMIN_USER.email) {
+        if (ALLOWED_ADMIN_EMAILS.has(normalizedEmail)) {
           // Para desenvolvimento, aceitar qualquer senha "admin123"
           if (credentials.password === 'admin123') {
             return {
               id: ADMIN_USER.id,
               name: ADMIN_USER.name,
-              email: ADMIN_USER.email,
+              email: normalizedEmail,
             }
           }
         }
@@ -78,4 +85,3 @@ export const authOptions: NextAuthOptions = {
   },
   secret: nextAuthSecret || 'dev-only-nextauth-secret',
 }
-

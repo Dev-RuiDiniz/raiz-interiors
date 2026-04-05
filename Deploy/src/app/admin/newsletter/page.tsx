@@ -1,49 +1,70 @@
-/*
-Arquivo: src/app/admin/newsletter/page.tsx
-Objetivo: Pagina do painel administrativo.
-Guia rapido: consulte imports no topo, depois tipos/constantes, e por fim a exportacao principal.
-*/
-
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import {
-  Search,
-  Download,
-  Trash2,
-  Mail,
-  Users,
-  TrendingUp,
-  Calendar,
-  Send,
-} from 'lucide-react'
+import { Calendar, Download, Loader2, Mail, Search, Send, Trash2, TrendingUp, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const subscribers = [
-  { id: '1', email: 'maria.silva@email.com', status: 'active', subscribedAt: '2024-01-15T10:30:00' },
-  { id: '2', email: 'john.doe@email.com', status: 'active', subscribedAt: '2024-01-14T15:45:00' },
-  { id: '3', email: 'ana.costa@email.com', status: 'active', subscribedAt: '2024-01-13T09:15:00' },
-  { id: '4', email: 'pedro.santos@email.com', status: 'unsubscribed', subscribedAt: '2024-01-12T14:20:00' },
-  { id: '5', email: 'clara.ferreira@email.com', status: 'active', subscribedAt: '2024-01-11T11:00:00' },
-  { id: '6', email: 'miguel.oliveira@email.com', status: 'active', subscribedAt: '2024-01-10T16:30:00' },
-  { id: '7', email: 'sofia.martins@email.com', status: 'active', subscribedAt: '2024-01-09T08:45:00' },
-  { id: '8', email: 'tiago.rodrigues@email.com', status: 'bounced', subscribedAt: '2024-01-08T12:15:00' },
-]
-
-const stats = [
-  { label: 'Total Subscribers', value: '892', icon: Users, change: '+24 this month' },
-  { label: 'Active', value: '847', icon: Mail, change: '95% of total' },
-  { label: 'Open Rate', value: '42%', icon: TrendingUp, change: '+5% vs last month' },
-]
+type Subscriber = {
+  id: string
+  email: string
+  active: boolean
+  createdAt: string
+}
 
 export default function NewsletterPage() {
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSubscribers, setSelectedSubscribers] = useState<string[]>([])
 
-  const filteredSubscribers = subscribers.filter((sub) =>
-    sub.email.toLowerCase().includes(searchQuery.toLowerCase())
+  useEffect(() => {
+    let active = true
+
+    async function loadSubscribers() {
+      setLoading(true)
+      setLoadError(null)
+      try {
+        const response = await fetch('/api/admin/newsletter', { cache: 'no-store' })
+        if (!response.ok) {
+          throw new Error('Nao foi possivel carregar newsletter.')
+        }
+        const data = (await response.json()) as Subscriber[]
+        if (!active) return
+        setSubscribers(Array.isArray(data) ? data : [])
+      } catch (error) {
+        if (!active) return
+        setLoadError(error instanceof Error ? error.message : 'Erro ao carregar newsletter.')
+        setSubscribers([])
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    void loadSubscribers()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const filteredSubscribers = useMemo(
+    () =>
+      subscribers.filter((sub) =>
+        sub.email.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    [subscribers, searchQuery]
   )
+
+  const activeSubscribers = subscribers.filter((sub) => sub.active).length
+  const inactiveSubscribers = subscribers.length - activeSubscribers
+  const growthRate = subscribers.length > 0 ? Math.round((activeSubscribers / subscribers.length) * 100) : 0
+
+  const stats = [
+    { label: 'Total Subscribers', value: String(subscribers.length), icon: Users, change: 'Live data' },
+    { label: 'Active', value: String(activeSubscribers), icon: Mail, change: `${growthRate}% of total` },
+    { label: 'Inactive', value: String(inactiveSubscribers), icon: TrendingUp, change: 'Require review' },
+  ]
 
   const toggleSelect = (id: string) => {
     setSelectedSubscribers((prev) =>
@@ -61,7 +82,6 @@ export default function NewsletterPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-cormorant text-2xl lg:text-3xl font-light text-stone-900 dark:text-white">
@@ -83,7 +103,12 @@ export default function NewsletterPage() {
         </div>
       </div>
 
-      {/* Stats */}
+      {loadError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {loadError}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {stats.map((stat, index) => (
           <motion.div
@@ -113,7 +138,6 @@ export default function NewsletterPage() {
         ))}
       </div>
 
-      {/* Search & Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-lg">
           <Search size={18} className="text-stone-400" />
@@ -127,7 +151,6 @@ export default function NewsletterPage() {
         </div>
       </div>
 
-      {/* Bulk Actions */}
       {selectedSubscribers.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -146,7 +169,6 @@ export default function NewsletterPage() {
         </motion.div>
       )}
 
-      {/* Subscribers Table */}
       <div className="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -175,6 +197,25 @@ export default function NewsletterPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
+              {loading && (
+                <tr>
+                  <td colSpan={5} className="px-5 py-8">
+                    <div className="flex items-center justify-center gap-2 text-stone-500 dark:text-stone-400">
+                      <Loader2 size={16} className="animate-spin" />
+                      A carregar subscritores...
+                    </div>
+                  </td>
+                </tr>
+              )}
+
+              {!loading && filteredSubscribers.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-5 py-8 text-center font-inter text-sm text-stone-500 dark:text-stone-400">
+                    No subscribers found
+                  </td>
+                </tr>
+              )}
+
               {filteredSubscribers.map((subscriber) => (
                 <tr
                   key={subscriber.id}
@@ -197,19 +238,19 @@ export default function NewsletterPage() {
                     <span
                       className={cn(
                         'inline-flex px-2.5 py-1 rounded-full font-inter text-xs',
-                        subscriber.status === 'active' && 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-                        subscriber.status === 'unsubscribed' && 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400',
-                        subscriber.status === 'bounced' && 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                        subscriber.active
+                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                          : 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400'
                       )}
                     >
-                      {subscriber.status}
+                      {subscriber.active ? 'active' : 'inactive'}
                     </span>
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
                       <Calendar size={14} />
                       <span className="font-inter text-sm">
-                        {new Date(subscriber.subscribedAt).toLocaleDateString()}
+                        {new Date(subscriber.createdAt).toLocaleDateString()}
                       </span>
                     </div>
                   </td>
@@ -224,7 +265,6 @@ export default function NewsletterPage() {
           </table>
         </div>
 
-        {/* Pagination */}
         <div className="px-5 py-4 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between">
           <p className="font-inter text-sm text-stone-500 dark:text-stone-400">
             Showing {filteredSubscribers.length} of {subscribers.length} subscribers
@@ -245,4 +285,3 @@ export default function NewsletterPage() {
     </div>
   )
 }
-

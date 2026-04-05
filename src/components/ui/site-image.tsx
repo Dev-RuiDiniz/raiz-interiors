@@ -1,11 +1,17 @@
 import Image, { type ImageProps } from 'next/image'
-import { getOptimizedAssetPath } from '@/lib/asset-variants'
+import { getOptimizedAssetPath, getOriginalAssetPath } from '@/lib/asset-variants'
 
-type SiteImageProps = ImageProps
+type SiteImageProps = ImageProps & {
+  assetMode?: 'optimized' | 'original'
+}
 
-export function SiteImage({ src, priority, loading, ...props }: SiteImageProps) {
-  const resolvedSrc = typeof src === 'string' ? getOptimizedAssetPath(src) : src
-  const resolvedLoading = loading ?? (priority ? 'eager' : 'lazy')
+export function SiteImage({ src, assetMode = 'optimized', ...props }: SiteImageProps) {
+  const resolvedSrc =
+    typeof src === 'string'
+      ? assetMode === 'original'
+        ? getOriginalAssetPath(src)
+        : getOptimizedAssetPath(src)
+      : src
 
-  return <Image {...props} src={resolvedSrc} priority={priority} loading={resolvedLoading} />
+  return <Image {...props} quality={props.quality ?? 85} src={resolvedSrc} />
 }

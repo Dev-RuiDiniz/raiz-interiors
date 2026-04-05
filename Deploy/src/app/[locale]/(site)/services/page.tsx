@@ -1,7 +1,7 @@
 import { getDictionary } from '@/i18n/get-dictionary'
 import { Locale } from '@/i18n/config'
 import { ServicesClient } from './services-client'
-import { defaultServices } from '@/lib/cms/default-services'
+import { getServicesContent } from '@/lib/cms/content-service'
 
 export default async function ServicesPage({
   params,
@@ -9,13 +9,19 @@ export default async function ServicesPage({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const dict = await getDictionary(locale as Locale)
+  const localeValue = locale as Locale
+  const dict = await getDictionary(localeValue)
+  const services = await getServicesContent()
+  const preferDictionary = localeValue === 'pt'
 
-  // Merge default services with localized titles and excerpts
-  const localizedServices = defaultServices.map((service) => ({
+  const localizedServices = services.map((service) => ({
     ...service,
-    title: dict.services.list[service.slug as keyof typeof dict.services.list]?.title || service.title,
-    excerpt: dict.services.list[service.slug as keyof typeof dict.services.list]?.excerpt || service.excerpt,
+    title: preferDictionary
+      ? dict.services.list[service.slug as keyof typeof dict.services.list]?.title || service.title
+      : service.title || dict.services.list[service.slug as keyof typeof dict.services.list]?.title || '',
+    excerpt: preferDictionary
+      ? dict.services.list[service.slug as keyof typeof dict.services.list]?.excerpt || service.excerpt
+      : service.excerpt || dict.services.list[service.slug as keyof typeof dict.services.list]?.excerpt || '',
   }))
 
   return (

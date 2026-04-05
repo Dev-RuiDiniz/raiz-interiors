@@ -8,7 +8,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { GalleryLayoutField } from '@/components/admin/gallery-layout-field'
-import { defaultServiceDetails, defaultServices } from '@/lib/cms/default-services'
 import { normalizeGalleryLayout } from '@/lib/cms/layout-types'
 
 interface PageProps {
@@ -39,68 +38,65 @@ type AdminServiceResponse = {
   status: EditableService['status']
 }
 
-function getFallbackService(id: string): EditableService {
-  const base = defaultServices.find((service) => service.id === id) || defaultServices[0]
-  const detail = defaultServiceDetails[base.slug]
-
-  return {
-    id: base.id,
-    slug: base.slug,
-    title: detail?.title || base.title,
-    subtitle: detail?.subtitle || '',
-    description: detail?.description || base.excerpt,
-    coverImage: base.image,
-    order: base.order,
-    active: base.status === 'PUBLISHED',
-    status: base.status,
-  }
-}
-
 export default function AdminServiceDetailEditorPage({ params }: PageProps) {
   const { id } = use(params)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
-  const [service, setService] = useState<EditableService>(getFallbackService(id))
-  const [layoutValue, setLayoutValue] = useState<string>('')
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [service, setService] = useState<EditableService | null>(null)
+  const [layoutValue, setLayoutValue] = useState<string>(JSON.stringify(normalizeGalleryLayout(null)))
 
-  const pageKey = useMemo(() => `service:${service.slug}`, [service.slug])
+  const pageKey = useMemo(() => (service ? `service:${service.slug}` : ''), [service])
   const sectionKey = 'detail_gallery'
 
   useEffect(() => {
     let active = true
 
     async function loadData() {
+      setLoading(true)
+      setLoadError(null)
       try {
         const response = await fetch(`/api/admin/services/${id}`, { cache: 'no-store' })
-        if (response.ok) {
-          const data = (await response.json()) as AdminServiceResponse
-          if (active) {
-            setService({
-              id: data.id,
-              slug: data.slug,
-              title: data.title,
-              subtitle: data.subtitle ?? '',
-              description: data.description ?? '',
-              coverImage: data.coverImage ?? '',
-              order: data.order ?? 0,
-              active: !!data.active,
-              status: data.status || 'DRAFT',
-            })
-          }
+        if (!response.ok) {
+          const raw = await response.text().catch(() => '')
+          throw new Error(raw || 'Nao foi possivel carregar o servico.')
         }
 
+        const data = (await response.json()) as AdminServiceResponse
+        if (!active) return
+
+        const nextService: EditableService = {
+          id: data.id,
+          slug: data.slug,
+          title: data.title,
+          subtitle: data.subtitle ?? '',
+          description: data.description ?? '',
+          coverImage: data.coverImage ?? '',
+          order: data.order ?? 0,
+          active: !!data.active,
+          status: data.status || 'DRAFT',
+        }
+
+        setService(nextService)
+
         const layoutResponse = await fetch(
-          `/api/admin/page-layout?pageKey=${encodeURIComponent(pageKey)}&sectionKey=${encodeURIComponent(sectionKey)}`,
+          `/api/admin/page-layout?pageKey=${encodeURIComponent(`service:${nextService.slug}`)}&sectionKey=${encodeURIComponent(sectionKey)}`,
           { cache: 'no-store' }
         )
-        if (layoutResponse.ok && active) {
-          const data = (await layoutResponse.json()) as { draft?: unknown }
-          setLayoutValue(JSON.stringify(normalizeGalleryLayout(data.draft)))
-        } else if (active) {
+
+        if (!active) return
+
+        if (layoutResponse.ok) {
+          const layoutData = (await layoutResponse.json()) as { draft?: unknown }
+          setLayoutValue(JSON.stringify(normalizeGalleryLayout(layoutData.draft)))
+        } else {
           setLayoutValue(JSON.stringify(normalizeGalleryLayout(null)))
         }
+      } catch (error) {
+        if (!active) return
+        setLoadError(error instanceof Error ? error.message : 'Erro ao carregar servico.')
       } finally {
         if (active) setLoading(false)
       }
@@ -110,9 +106,11 @@ export default function AdminServiceDetailEditorPage({ params }: PageProps) {
     return () => {
       active = false
     }
-  }, [id, pageKey])
+  }, [id])
 
   const persistService = async () => {
+    if (!service) return
+
     const response = await fetch(`/api/admin/services/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -122,11 +120,14 @@ export default function AdminServiceDetailEditorPage({ params }: PageProps) {
       }),
     })
     if (!response.ok) {
-      throw new Error('Não foi possível guardar dados do serviço.')
+      const data = (await response.json().catch(() => null)) as { error?: string } | null
+      throw new Error(data?.error || 'Nao foi possivel guardar dados do servico.')
     }
   }
 
   const persistLayoutDraft = async () => {
+    if (!pageKey) return
+
     let parsedLayout: unknown = null
     try {
       parsedLayout = JSON.parse(layoutValue || '{}')
@@ -144,7 +145,7 @@ export default function AdminServiceDetailEditorPage({ params }: PageProps) {
       }),
     })
     if (!response.ok) {
-      throw new Error('Não foi possível guardar layout da galeria.')
+      throw new Error('Nao foi possivel guardar layout da galeria.')
     }
   }
 
@@ -163,6 +164,8 @@ export default function AdminServiceDetailEditorPage({ params }: PageProps) {
   }
 
   const onPublish = async () => {
+    if (!pageKey) return
+
     setPublishing(true)
     setMessage(null)
     try {
@@ -178,9 +181,9 @@ export default function AdminServiceDetailEditorPage({ params }: PageProps) {
         }),
       })
       if (!response.ok) {
-        throw new Error('Não foi possível publicar galeria.')
+        throw new Error('Nao foi possivel publicar galeria.')
       }
-      setMessage('Serviço e galeria publicados com sucesso.')
+      setMessage('Servico e galeria publicados com sucesso.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Erro ao publicar.')
     } finally {
@@ -192,7 +195,21 @@ export default function AdminServiceDetailEditorPage({ params }: PageProps) {
     return (
       <div className="flex items-center gap-2 text-stone-500">
         <Loader2 size={18} className="animate-spin" />
-        Carregando serviço...
+        Carregando servico...
+      </div>
+    )
+  }
+
+  if (loadError || !service) {
+    return (
+      <div className="space-y-4">
+        <Link href="/admin/services" className="inline-flex items-center gap-2 text-xs text-stone-500 hover:text-stone-900">
+          <ArrowLeft size={14} />
+          Voltar para Services
+        </Link>
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {loadError || 'Servico nao encontrado.'}
+        </div>
       </div>
     )
   }
@@ -205,13 +222,13 @@ export default function AdminServiceDetailEditorPage({ params }: PageProps) {
             <ArrowLeft size={14} />
             Voltar para Services
           </Link>
-          <h1 className="font-cormorant text-3xl text-stone-900 dark:text-white">Editar Serviço</h1>
+          <h1 className="font-cormorant text-3xl text-stone-900 dark:text-white">Editar Servico</h1>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" asChild>
             <a href={`/services/${service.slug}`} target="_blank" rel="noopener noreferrer">
               <Eye size={16} />
-              Ver página
+              Ver pagina
             </a>
           </Button>
           <Button onClick={onSave} disabled={saving || publishing}>
@@ -232,18 +249,18 @@ export default function AdminServiceDetailEditorPage({ params }: PageProps) {
       )}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Field label="Título" value={service.title} onChange={(value) => setService((prev) => ({ ...prev, title: value }))} />
-        <Field label="Slug" value={service.slug} onChange={(value) => setService((prev) => ({ ...prev, slug: value }))} />
-        <Field label="Subtítulo" value={service.subtitle} onChange={(value) => setService((prev) => ({ ...prev, subtitle: value }))} />
-        <Field label="Cover image" value={service.coverImage} onChange={(value) => setService((prev) => ({ ...prev, coverImage: value }))} />
+        <Field label="Titulo" value={service.title} onChange={(value) => setService((prev) => (prev ? { ...prev, title: value } : prev))} />
+        <Field label="Slug" value={service.slug} onChange={(value) => setService((prev) => (prev ? { ...prev, slug: value } : prev))} />
+        <Field label="Subtitulo" value={service.subtitle} onChange={(value) => setService((prev) => (prev ? { ...prev, subtitle: value } : prev))} />
+        <Field label="Cover image" value={service.coverImage} onChange={(value) => setService((prev) => (prev ? { ...prev, coverImage: value } : prev))} />
       </div>
 
       <div className="space-y-2">
-        <Label>Descrição</Label>
+        <Label>Descricao</Label>
         <Textarea
           rows={6}
           value={service.description}
-          onChange={(event) => setService((prev) => ({ ...prev, description: event.target.value }))}
+          onChange={(event) => setService((prev) => (prev ? { ...prev, description: event.target.value } : prev))}
         />
       </div>
 

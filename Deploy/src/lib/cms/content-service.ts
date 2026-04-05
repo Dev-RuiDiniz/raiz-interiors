@@ -1,10 +1,60 @@
 import prisma from '@/lib/prisma'
 import { defaultProjects, defaultProjectDetails } from '@/lib/cms/default-projects'
 import { defaultServices, defaultServiceDetails } from '@/lib/cms/default-services'
+import { getPublishedPageLayout } from '@/lib/cms/page-layout-service'
+import { getLocalProjectBySlug, getLocalProjects } from '@/lib/cms/local-project-store'
+
+type ProjectImageSource = string | { url?: string | null; visible?: boolean | null; order?: number | null }
+
+type ProjectLike = {
+  slug: string
+  coverImage: string
+  images?: ProjectImageSource[]
+}
+
+export async function resolveProjectDetailImages(project: ProjectLike) {
+  const visibleImages =
+    project.images
+      ?.map((image) => {
+        if (typeof image === 'string') return image
+        if (image.visible === false) return ''
+        return image.url || ''
+      })
+      .filter(Boolean) || []
+
+  let detailImages = visibleImages
+
+  const publishedDetailLayout = await getPublishedPageLayout(`project:${project.slug}`, 'detail_gallery')
+  if (publishedDetailLayout.exists && publishedDetailLayout.layout.items.length > 0) {
+    detailImages = publishedDetailLayout.layout.items
+      .filter((item) => item.visible)
+      .sort((a, b) => a.order - b.order)
+      .map((item) => item.src)
+      .filter(Boolean)
+  }
+
+  if (!detailImages.length) {
+    const fallbackImages = defaultProjectDetails[project.slug]?.images || []
+    detailImages = fallbackImages.length ? fallbackImages : project.coverImage ? [project.coverImage] : []
+  }
+
+  return detailImages
+}
 
 export async function getProjectsContent() {
   if (!prisma) {
-    return defaultProjects
+    const projects = await getLocalProjects()
+    return projects.map((project, index) => ({
+      id: project.id,
+      slug: project.slug,
+      title: project.title,
+      subtitle: project.subtitle || '',
+      location: project.location,
+      category: project.category,
+      status: project.status,
+      coverImage: project.coverImage,
+      order: project.order ?? index + 1,
+    }))
   }
 
   const projects = await prisma.project.findMany({
@@ -30,7 +80,26 @@ export async function getProjectsContent() {
 
 export async function getProjectDetailContent(slug: string) {
   if (!prisma) {
-    return defaultProjectDetails[slug] || defaultProjectDetails['summer-house-comporta']
+    const project = await getLocalProjectBySlug(slug)
+    if (!project) {
+      return defaultProjectDetails[slug] || defaultProjectDetails['summer-house-comporta']
+    }
+
+    return {
+      slug: project.slug,
+      title: project.title,
+      subtitle: project.subtitle || '',
+      location: project.location,
+      category: project.category,
+      status: project.status,
+      year: project.year || '',
+      client: project.client || '',
+      description: project.description || '',
+      credits: project.credits || '',
+      photography: '',
+      coverImage: project.coverImage,
+      images: project.images?.length ? project.images : defaultProjectDetails[slug]?.images || (project.coverImage ? [project.coverImage] : []),
+    }
   }
 
   const project = await prisma.project.findUnique({
@@ -47,6 +116,12 @@ export async function getProjectDetailContent(slug: string) {
     return defaultProjectDetails[slug] || defaultProjectDetails['summer-house-comporta']
   }
 
+  const detailImages = await resolveProjectDetailImages({
+    slug: project.slug,
+    coverImage: project.coverImage,
+    images: project.images,
+  })
+
   return {
     slug: project.slug,
     title: project.title,
@@ -60,7 +135,7 @@ export async function getProjectDetailContent(slug: string) {
     credits: project.credits || '',
     photography: '',
     coverImage: project.coverImage,
-    images: project.images.map((image) => image.url),
+    images: detailImages,
   }
 }
 
@@ -108,13 +183,27 @@ export async function getServiceDetailContent(slug: string) {
     return defaultServiceDetails[slug] || defaultServiceDetails['interior-design']
   }
 
+  let detailImages = service.images.map((image) => image.url)
+  const publishedDetailLayout = await getPublishedPageLayout(`service:${service.slug}`, 'detail_gallery')
+  if (publishedDetailLayout.exists && publishedDetailLayout.layout.items.length > 0) {
+    detailImages = publishedDetailLayout.layout.items
+      .filter((item) => item.visible)
+      .sort((a, b) => a.order - b.order)
+      .map((item) => item.src)
+      .filter(Boolean)
+  }
+
+  if (!detailImages.length) {
+    detailImages = service.coverImage ? [service.coverImage] : []
+  }
+
   return {
     slug: service.slug,
     title: service.title,
     subtitle: service.subtitle || '',
     description: service.description || '',
     features: service.features,
-    images: service.images.length ? service.images.map((image) => image.url) : [service.coverImage || ''],
+    images: detailImages,
     status: service.status,
   }
 }
