@@ -1,0 +1,418 @@
+import type { ProjectCategory, ProjectStatus } from '@/lib/cms/default-types'
+
+export interface DefaultProjectSummary {
+  id: string
+  slug: string
+  title: string
+  subtitle: string
+  location: string
+  category: ProjectCategory
+  status: ProjectStatus
+  coverImage: string
+  order: number
+}
+
+export interface DefaultProjectDetail {
+  slug: string
+  title: string
+  subtitle: string
+  location: string
+  category: ProjectCategory
+  status: ProjectStatus
+  year: string
+  client: string
+  description: string
+  credits: string
+  photography: string
+  coverImage: string
+  images: string[]
+}
+
+export const defaultProjects: DefaultProjectSummary[] = [
+  {
+    id: '1',
+    slug: 'summer-house-comporta',
+    title: 'SUMMER HOUSE COMPORTA',
+    subtitle: '',
+    location: 'COMPORTA RETREAT',
+    category: 'RESIDENTIAL',
+    status: 'PUBLISHED',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/summer_house_in_comporta.jpg',
+    order: 1,
+  },
+  {
+    id: '2',
+    slug: 'contemporary-city-house',
+    title: 'CONTEMPORARY CITY HOUSE',
+    subtitle: '',
+    location: 'ALMADA',
+    category: 'RESIDENTIAL',
+    status: 'PUBLISHED',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/contemporary_city_house.jpg',
+    order: 2,
+  },
+  {
+    id: '3',
+    slug: 'elegant-timeless-duplex',
+    title: 'ELEGANT & TIMELESS DUPLEX',
+    subtitle: '',
+    location: 'BRAGA',
+    category: 'RESIDENTIAL',
+    status: 'PUBLISHED',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/elegant_and_tmeless_duplex.jpg',
+    order: 3,
+  },
+  {
+    id: '4',
+    slug: 'beach-house-troia',
+    title: 'BEACH HOUSE',
+    subtitle: 'in TROIA',
+    location: 'PESTANA TROIA ECO RESORT',
+    category: 'RESIDENTIAL',
+    status: 'PUBLISHED',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/beach_house_in_troia.jpg',
+    order: 4,
+  },
+  {
+    id: '5',
+    slug: 'pombaline-restoration-principe-real',
+    title: 'PRÍNCIPE REAL POMBALINE RESTORATION',
+    subtitle: '',
+    location: 'LISBOA',
+    category: 'RESIDENTIAL',
+    status: 'PUBLISHED',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/principe_real_pombaline_restoration.jpg',
+    order: 5,
+  },
+  {
+    id: '6',
+    slug: 'rural-retreat',
+    title: 'RURAL RETREAT',
+    subtitle: '',
+    location: 'SERRA DA ESTRELA',
+    category: 'HOSPITALITY',
+    status: 'PUBLISHED',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/rural_retreat.jpeg',
+    order: 6,
+  },
+  {
+    id: '7',
+    slug: 'store-restauration-atelier',
+    title: 'CURATED OBJECTS & RESTAURATION ATELIER',
+    subtitle: '',
+    location: 'ALMADA',
+    category: 'COMMERCIAL',
+    status: 'PUBLISHED',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/store_and_restauration_atelier.jpg',
+    order: 7,
+  },
+  {
+    id: '8',
+    slug: 'beach-house-troia-ii',
+    title: 'BEACH HOUSE',
+    subtitle: 'in Troia II',
+    location: 'PESTANA TROIA ECO RESORT',
+    category: 'RESIDENTIAL',
+    status: 'COMING_SOON',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/beach_house_troia_ii.jpg',
+    order: 8,
+  },
+  {
+    id: '9',
+    slug: 'weekend-family-house',
+    title: 'WEEKEND FAMILY HOUSE',
+    subtitle: '',
+    location: 'AROEIRA',
+    category: 'RESIDENTIAL',
+    status: 'COMING_SOON',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/aroeira_weekend_house.jpg',
+    order: 9,
+  },
+  {
+    id: '10',
+    slug: 'young-soul-city-apartment',
+    title: 'YOUNG SOUL CITY APARTMENT',
+    subtitle: '',
+    location: 'MIREAR TERRACES',
+    category: 'RESIDENTIAL',
+    status: 'COMING_SOON',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/young_soul_city_apatment.jpeg',
+    order: 10,
+  },
+]
+
+export const defaultProjectDetails: Record<string, DefaultProjectDetail> = {
+  'summer-house-comporta': {
+    slug: 'summer-house-comporta',
+    title: 'SUMMER HOUSE COMPORTA',
+    subtitle: '',
+    location: 'COMPORTA RETREAT',
+    category: 'RESIDENTIAL',
+    status: 'PUBLISHED',
+    year: '2023',
+    client: 'Private Client',
+    description: `Inspired by the natural beauty of Comporta and the serene rice fields stretching towards the horizon, this summer house captures the essence of its unique landscape. The interior design unfolds through a harmonious palette of colours, textures, and organic materials, creating a calm and grounded atmosphere.
+  
+  A true sanctuary for relaxation, this holiday retreat is designed for meaningful family moments, slow living, and the creation of lasting memories.`,
+    credits: 'INTERIOR DESIGN & DECORATION (co-autoria Carla Belo)',
+    photography: 'RAIZ INTERIORS STUDIO',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/summer_house_in_comporta.jpg',
+    images: [
+      '/2026/projects/summer_house_comporta/00_minimal entrance hall w sculptural wooden bench and handcraft lamp interiordesign by Raiz.jpg',
+      '/2026/projects/summer_house_comporta/01_beautiful and timeless comporta style summer house powder room interior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/02_beautiful and timeless comporta style summer house powder room detail interior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/03_beautiful and timeless comporta style summer house dinning  interior design by RAIZ_.jpg',
+      '/2026/projects/summer_house_comporta/04_beautiful and timeless comporta style  summer house dinning room interior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/05_beautiful and timeless comporta summer house style living room interior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/06_beautiful and timeless comporta style summer house fireplace interior design by RAIZ_.jpg',
+      '/2026/projects/summer_house_comporta/07_beautiful and timeless comporta summer house  tv room interior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/08_beautiful and timeless comporta summer house style interior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/09_beautiful and timeless comporta summer house style interior design by RAIZ.png',
+      '/2026/projects/summer_house_comporta/10_beautiful and timeless comporta style summer house master suite corridor interior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/11_beautiful and timeless comporta style summer house master suite interior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/12_beautiful and timeless comporta style summer house master suite interior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/13_beautiful and timeless comporta style summer house master suite interior design by RAIZ_.jpg',
+      '/2026/projects/summer_house_comporta/14_beautiful and timeless comporta style summer house master suite closet interior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/15_beautiful and timeless comporta style summer house master suite bathroom interior design by RAIZ.png',
+      '/2026/projects/summer_house_comporta/16_beautiful and timeless comporta style summer house master suite bathroom detail interior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/17_beautiful and timeless comporta style summer house master suite bath tubinterior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/18_beautiful contemporary nursery room with baloon lamps interior design by Raiz.jpg',
+      '/2026/projects/summer_house_comporta/19_beautiful contemporary nursery room with baloon lamps interior design by Raiz.jpg',
+      '/2026/projects/summer_house_comporta/20_beautiful and timeless comporta style summer house room interior design by RAIZ.jpg',
+      '/2026/projects/summer_house_comporta/21_minimal console bespoke design by RAIZ.png',
+      '/2026/projects/summer_house_comporta/22_beautiful and timeless comporta style summer house double room interior design by RAIZ_.jpg',
+      '/2026/projects/summer_house_comporta/23_beautiful confortable and timeless comporta style summer house living room interior design by RAIZ3.jpg',
+      '/2026/projects/summer_house_comporta/24_beautiful and timeless comporta style summer house yoga shala interior design by RAIZ_.jpg',
+      '/2026/projects/summer_house_comporta/25_outddor swiming pool area comporta style summer house deck interior design  by RAIZ_.png',
+      '/2026/projects/summer_house_comporta/26_outddor swiming pool area comporta style summer house interior design  by RAIZ_.jpg',
+      '/2026/projects/summer_house_comporta/28_outddor lounge area comporta style summer house interior design  by RAIZ.png',
+      '/2026/projects/summer_house_comporta/28_outddor lounge terrace comporta style summer house interior design  by RAIZ.png',
+    ],
+  },
+  'contemporary-city-house': {
+    slug: 'contemporary-city-house',
+    title: 'CONTEMPORARY CITY HOUSE',
+    subtitle: '',
+    location: 'ALMADA',
+    category: 'RESIDENTIAL',
+    status: 'PUBLISHED',
+    year: '2022',
+    client: 'Private Client',
+    description: `Elegant and understated, this contemporary city home embodies the soul of modern minimalism. A carefully curated monochromatic palette and clean architectural lines bring harmony and balance to the space, where every element has purpose and every detail speaks to refined simplicity.
+
+Designed for a life lived with intention, the interiors merge functionality and beauty seamlessly. Natural light plays a central role, enhancing the sense of openness and calm. Thoughtful material choices and bespoke furniture pieces add subtle warmth, creating an environment that feels both sophisticated and deeply welcoming.`,
+    credits: 'TOTAL RENOVATION, INTERIOR ARCHITECTURE & DECORATION',
+    photography: 'RAIZ INTERIORS STUDIO',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/contemporary_city_house.jpg',
+    images: [
+      '/2026/projects/contemporary_city_house/01_contemporary minimalist living room interior design by RAIZ.JPG',
+      '/2026/projects/contemporary_city_house/02_contemporary minimalist microcement bathroom interior design.png',
+      '/2026/projects/contemporary_city_house/03_contemporary minimalist living room suspended staircase and fireplace interior design by RAIZ.jpg',
+      '/2026/projects/contemporary_city_house/04_contemporary minimalist living room suspended staircase interior design by RAIZ.jpg',
+      '/2026/projects/contemporary_city_house/05_contemporary minimalist living room  dining room interior design by RAIZ.jpg',
+      '/2026/projects/contemporary_city_house/06_contemporary minimalist microcement wood kitchen interior design by RAIZ_.jpg',
+      '/2026/projects/contemporary_city_house/07_contemporary minimalist microcement kitchen interior design by RAIZ.JPEG',
+      '/2026/projects/contemporary_city_house/08_contemporary minimalist microcement wood kitchen interior design by RAIZ.jpg',
+      '/2026/projects/contemporary_city_house/09_contemporary minimalist microcement wood kitchen detail interior design by RAIZ.JPEG',
+      '/2026/projects/contemporary_city_house/10_contemporary minimalist microcement wood kitchen interior design by RAIZ.JPEG',
+      '/2026/projects/contemporary_city_house/11_contemporary minimalist suspended staircase interior architecture by RAIZ.jpg',
+      '/2026/projects/contemporary_city_house/12_contemporary minimalist staircase interior architecture by RAIZ.jpg',
+      '/2026/projects/contemporary_city_house/13_contemporary minimalist room interior design by RAIZ_.jpg',
+      '/2026/projects/contemporary_city_house/14_contemporary minimalist room interior design by RAIZ.jpg',
+      '/2026/projects/contemporary_city_house/15_contemporary minimalist microcement bathroom with walk in shower interior design by RAIZ.jpg',
+      '/2026/projects/contemporary_city_house/16_contemporary minimalist microcement bathroom interior design by RAIZ.jpg',
+      '/2026/projects/contemporary_city_house/17_contemporary minimalist microcement bathroom detail interior design by RAIZ.JPEG',
+      '/2026/projects/contemporary_city_house/18_contemporary minimalist microcement  detail interior design by RAIZ.JPG',
+      '/2026/projects/contemporary_city_house/19_contemporary minimalist microcement terrace detail interior design by RAIZ.png',
+      '/2026/projects/contemporary_city_house/20_contemporary minimalist microcement bathroom detail interior design by RAIZ.png',
+    ],
+  },
+  'elegant-timeless-duplex': {
+    slug: 'elegant-timeless-duplex',
+    title: 'ELEGANT & TIMELESS DUPLEX',
+    subtitle: '',
+    location: 'BRAGA',
+    category: 'RESIDENTIAL',
+    status: 'PUBLISHED',
+    year: '2023',
+    client: 'Private Client',
+    description: `Elegant and warm, this timeless duplex apartment was conceived to evoke the comfort and refinement of a boutique hotel, seamlessly adapted to the rhythm of multifunctional family living.
+  
+  Thoughtfully designed to balance sophistication with everyday ease, the spaces flow naturally between social and private moments. Rich materials, soft textures, and carefully layered lighting create an atmosphere that feels both luxurious and genuinely welcoming - a home where every detail has been considered, and every room invites you to stay and create memories.`,
+    credits: 'TOTAL RENOVATION, INTERIOR ARCHITECTURE (co-autoria Carla Belo)',
+    photography: 'JOAO RODRIGO CORREIA',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/elegant_and_tmeless_duplex.jpg',
+    images: [
+      '/2026/projects/elegant_and_timeless_duplex/01_modern contemporary staircase design with LED lighting projected by RAIZ.png',
+      '/2026/projects/elegant_and_timeless_duplex/02_modern contemporary staircase design with LED lighting detail projected by RAIZ.jpg',
+      '/2026/projects/elegant_and_timeless_duplex/03_elegant timeless luxury master suite bespoke headboard by RAIZ.png',
+      '/2026/projects/elegant_and_timeless_duplex/04_elegant timeless luxury master suite design by RAIZ.jpg',
+      '/2026/projects/elegant_and_timeless_duplex/05_elegant timeless luxury master suite interior design by RAIZ.jpg',
+      '/2026/projects/elegant_and_timeless_duplex/06_elegant timeless luxury master suite bespoke closet design by RAIZ.jpg',
+      '/2026/projects/elegant_and_timeless_duplex/07_elegant timeless luxury master suite bespoke closet  with mirror design by RAIZ.jpg',
+      '/2026/projects/elegant_and_timeless_duplex/08_elegant and luxury bathroom interior design by RAIZ.jpg',
+      '/2026/projects/elegant_and_timeless_duplex/09_elegant and timeless marble bathroom design by RAIZ.jpg',
+      '/2026/projects/elegant_and_timeless_duplex/10_modern and contemporary bespoke headboard design  by RAIZ.jpg',
+      '/2026/projects/elegant_and_timeless_duplex/11_modern and contemporary bespoke headboard interior design  by RAIZ.jpg',
+      '/2026/projects/elegant_and_timeless_duplex/12_modern and contemporary bespoke wardrobe design  by RAIZ.jpg',
+      '/2026/projects/elegant_and_timeless_duplex/13_minimal and contemporary bathroom design by RAIZ.png',
+      '/2026/projects/elegant_and_timeless_duplex/14_clean and minimal attic design by RAIZ.jpg',
+      '/2026/projects/elegant_and_timeless_duplex/15_clean and minimal attic design details  by RAIZ.jpg',
+      '/2026/projects/elegant_and_timeless_duplex/16_clean and minimal attic design details  by RAIZ.jpg',
+    ],
+  },
+  'beach-house-troia': {
+    slug: 'beach-house-troia',
+    title: 'BEACH HOUSE',
+    subtitle: 'in TROIA',
+    location: 'Pestana Troia Eco Resort',
+    category: 'RESIDENTIAL',
+    status: 'PUBLISHED',
+    year: '2024',
+    client: 'Private Client',
+    description: `Nestled within the sweeping dunes of Troia, this beach house reflects the pure essence of coastal living. Inspired by the soft sandy tones of its surroundings, the design embraces a minimalist and monochromatic aesthetic where simplicity and serenity take centre stage.
+
+Created as a seasonal family retreat, the spaces combine comfort and functionality, flowing seamlessly to encourage relaxed living, quiet moments, and joyful gatherings. A refined yet effortless celebration of seaside living in Portugal.`,
+    credits: 'INTERIOR DESIGN & DECORATION (co-autoria Carla Belo)',
+    photography: '3D IMAGES: SARA PETIZ VIANA',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/beach_house_in_troia.jpg',
+    images: [
+      '/2026/projects/beach_house_troia/01_contemporary-beach-house-microcement-Hall-interior-design-by-RAIZ.jpg',
+      '/2026/projects/beach_house_troia/02_contemporary-beach-house-living-room-interior-design-by-RAIZ.jpg',
+      '/2026/projects/beach_house_troia/03_contemporary-beach-house-living-room-with-fireplace-interior-design-by-RAIZ.jpg',
+      '/2026/projects/beach_house_troia/04_contemporary-beach-house-living-room-with-curved-sofa-interior-design-by-RAIZ.jpg',
+      '/2026/projects/beach_house_troia/05_contemporary-beach-house-open-kitchen-and-dinning-room -interior-design-by-RAIZ.jpg',
+      '/2026/projects/beach_house_troia/06_contemporary-beach-house-dinning-room-interior-design-by-RAIZ.jpg',
+      '/2026/projects/beach_house_troia/07_contemporary-beach-house-office-interior-design-by-RAIZ.jpg',
+      '/2026/projects/beach_house_troia/08_contemporary-beach-house-Master-Suite-interior-design-by-RAIZ.jpg',
+      '/2026/projects/beach_house_troia/09_contemporary-beach-house-microcement-bathroom-interior-design-by-RAIZ.jpg',
+    ],
+  },
+  'pombaline-restoration-principe-real': {
+    slug: 'pombaline-restoration-principe-real',
+    title: 'PRÍNCIPE REAL POMBALINE RESTORATION',
+    subtitle: '',
+    location: 'LISBOA',
+    category: 'RESIDENTIAL',
+    status: 'PUBLISHED',
+    year: '2024',
+    client: 'Private Client',
+    description: `Located in the heart of Príncipe Real, this Pombaline building underwent a full rehabilitation to adapt each apartment to contemporary living while preserving its original character.
+  
+  Despite its advanced deterioration, key historical features—such as traditional tile panels, the original staircase, and traces of frescoes—were carefully restored to retain the soul of the building in the communal areas.
+  
+  Inside the apartments, where the alterations were most visible, a contemporary, neutral, and timeless design language was introduced, elegant yet understated, ensuring comfort and coherence while respecting the architectural identity of the Pombaline structure.`,
+    credits: 'INTERIOR ARCHITECTURE AND RESTORATION',
+    photography: '3D IMAGES: DMYTRO',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/principe_real_pombaline_restoration.jpg',
+    images: [
+      '/2026/projects/principe_real_pombaline_restoration/01.jpg',
+      '/2026/projects/principe_real_pombaline_restoration/02.jpg',
+      '/2026/projects/principe_real_pombaline_restoration/03.jpg',
+      '/2026/projects/principe_real_pombaline_restoration/04.jpg',
+      '/2026/projects/principe_real_pombaline_restoration/05.jpg',
+      '/2026/projects/principe_real_pombaline_restoration/06.jpg',
+      '/2026/projects/principe_real_pombaline_restoration/07.jpg',
+      '/2026/projects/principe_real_pombaline_restoration/08.jpg',
+      '/2026/projects/principe_real_pombaline_restoration/09.PNG',
+      '/2026/projects/principe_real_pombaline_restoration/10.png',
+      '/2026/projects/principe_real_pombaline_restoration/11.png',
+    ],
+  },
+  'rural-retreat': {
+    slug: 'rural-retreat',
+    title: 'RURAL RETREAT',
+    subtitle: '',
+    location: 'SERRA DA ESTRELA',
+    category: 'HOSPITALITY',
+    status: 'PUBLISHED',
+    year: '2024',
+    client: 'Private Client',
+    description: `Set in the peaceful interior of Portugal, this rural retreat offers a soothing escape from the rush of everyday life.
+  
+  Designed for those seeking tranquillity and authentic connection, it carries the charm of a traditional village home filled with history, textures, and quiet corners.
+  
+  Rooted in natural materials and vernacular architecture, the project preserves heritage while subtly reinterpreting it. Each space enhances comfort and sensory warmth, transforming the house into a sanctuary for rest, reflection, and deep rejuvenation.`,
+    credits: 'ARCHITECTURE, INTERIOR ARCHITECTURE & DECORATION',
+    photography: '',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/rural_retreat.jpeg',
+    images: [
+      '/2026/projects/rural_retreat/01_Stone ruin restoration project for a guest house  rural mountain retreat by RAIZ.jpg',
+      '/2026/projects/rural_retreat/02_Stone ruin restoration project for a rural mountain retreat by RAIZ.JPG',
+      '/2026/projects/rural_retreat/03_textured old wood rural retreat in the mountain project by RAIZ.JPG',
+    ],
+  },
+  'store-restauration-atelier': {
+    slug: 'store-restauration-atelier',
+    title: 'CURATED OBJECTS & RESTAURATION ATELIER',
+    subtitle: '',
+    location: 'ALMADA',
+    category: 'COMMERCIAL',
+    status: 'PUBLISHED',
+    year: '2023',
+    client: '',
+    description: `In a contemporary reinterpretation of traditional historic-centre shops, this store-gallery emerges as a space where architecture, curation, and restoration coexist seamlessly.
+  
+  The project celebrates each object and its renewed meaning through an integrated restoration atelier, emphasizing authenticity, craftsmanship, and design.
+  
+  A minimalist aesthetic, thoughtfully designed lighting, and a neutral material palette create a calm atmosphere that highlights every piece, giving it a near-museographic presence and an immersive sense of discovery.`,
+    credits: 'INTERIOR ARCHITECTURE',
+    photography: 'RAIZ INTERIORS STUDIO',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/store_and_restauration_atelier.jpg',
+    images: [
+      '/2026/projects/store_and_restauration_atelier/01.jpg',
+      '/2026/projects/store_and_restauration_atelier/02.jpg',
+      '/2026/projects/store_and_restauration_atelier/03.jpg',
+      '/2026/projects/store_and_restauration_atelier/04.jpg',
+      '/2026/projects/store_and_restauration_atelier/05.jpg',
+      '/2026/projects/store_and_restauration_atelier/06.jpg',
+      '/2026/projects/store_and_restauration_atelier/07.jpg',
+      '/2026/projects/store_and_restauration_atelier/08.jpg',
+    ],
+  },
+  'beach-house-troia-ii': {
+    slug: 'beach-house-troia-ii',
+    title: 'BEACH HOUSE',
+    subtitle: 'in Troia II',
+    location: 'PESTANA TROIA ECO RESORT',
+    category: 'RESIDENTIAL',
+    status: 'COMING_SOON',
+    year: '',
+    client: 'Private Client',
+    description: 'Coming soon.',
+    credits: '',
+    photography: '',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/beach_house_troia_ii.jpg',
+    images: [],
+  },
+  'weekend-family-house': {
+    slug: 'weekend-family-house',
+    title: 'WEEKEND FAMILY HOUSE',
+    subtitle: '',
+    location: 'AROEIRA',
+    category: 'RESIDENTIAL',
+    status: 'COMING_SOON',
+    year: '',
+    client: 'Private Client',
+    description: 'Coming soon.',
+    credits: '',
+    photography: '',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/aroeira_weekend_house.jpg',
+    images: [],
+  },
+  'young-soul-city-apartment': {
+    slug: 'young-soul-city-apartment',
+    title: 'YOUNG SOUL CITY APARTMENT',
+    subtitle: '',
+    location: 'MIREAR TERRACES',
+    category: 'RESIDENTIAL',
+    status: 'COMING_SOON',
+    year: '',
+    client: 'Private Client',
+    description: 'Coming soon.',
+    credits: '',
+    photography: '',
+    coverImage: '/2026/projects/fotos_capa_menu_projectos/young_soul_city_apatment.jpeg',
+    images: [],
+  },
+}
