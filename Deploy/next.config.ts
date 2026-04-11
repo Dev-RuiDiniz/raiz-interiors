@@ -8,7 +8,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  output: "standalone",
+  outputFileTracingRoot: process.cwd(),
   productionBrowserSourceMaps: false,
   images: {
     unoptimized: true,

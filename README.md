@@ -16,9 +16,9 @@ Website da RAIZ Interiors construído com Next.js, TypeScript e Tailwind CSS.
 - `src/`: aplicação principal
 - `public/`: imagens e assets públicos
 - `prisma/`: schema e configuração do banco
-- `Deploy/`: snapshot preservado da versão atual do projeto, limpo de artefatos pesados e temporários, usado apenas como referência
+- `Deploy/`: aplicação que a Vercel deve construir em produção, mantida como unidade isolada de deploy dentro da raiz do repositório
 
-Novas alterações de produto devem ser feitas em `src/`. A pasta `Deploy/` não participa do `build`, `typecheck` nem do deploy da Vercel da aplicação principal.
+Para o deploy hospedado na Vercel, a decisão atual do projeto é usar `Deploy/` como Root Directory. A raiz continua útil para desenvolvimento e comparação, mas o pipeline publicado deve instalar dependências, rodar `build` e ler a configuração a partir de `Deploy/`.
 
 ## Rodando localmente
 
@@ -54,11 +54,11 @@ APIFY_API_TOKEN=""
 
 ## Preview na Vercel
 
-Este repositório está preparado para um primeiro deploy de teste focado no site público.
+Este repositório está configurado para publicar a versão de `Deploy/` na Vercel.
 
-- O site público usa fallbacks quando `DATABASE_URL` não está configurada.
-- Admin, autenticação e rotas de API continuam no projeto, mas o objetivo inicial é validar o frontend público.
-- Se o preview exigir dados dinâmicos futuros, basta configurar as variáveis de ambiente na Vercel.
+- Defina o Root Directory do projeto como `Deploy`.
+- Mantenha qualquer override manual do dashboard alinhado com esse mesmo caminho.
+- A documentação operacional dessa decisão está em `docs/vercel-deploy.md`.
 
 ## GitHub
 

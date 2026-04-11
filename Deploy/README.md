@@ -64,7 +64,9 @@ NEXTAUTH_SECRET="your-secret"
 
 Ready for deployment on Vercel:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/WBianchi/raiz-interiors)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/WBianchi/raiz-interiors&root-directory=Deploy)
+
+This directory is the official Root Directory for Vercel in this repository. Build and deployment settings must point to `Deploy/` at the repository root.
 
 ---
 
@@ -88,3 +90,9 @@ APIFY_API_TOKEN="" # optional unless using /api/instagram/sync
 ```
 
 Detailed setup and staging strategy: `doc/setup-staging.md`.
+
+## Vercel root directory
+
+- Repository Root Directory: `Deploy`
+- Install, typecheck and build commands for production must run from this folder
+- Operational rationale is documented in `../docs/vercel-deploy.md`
