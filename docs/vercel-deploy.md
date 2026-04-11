@@ -14,6 +14,7 @@ O deploy oficial da Vercel deste repositório deve usar `Deploy/` como Root Dire
 
 - No projeto da Vercel, configure o Root Directory como `Deploy`.
 - Preserve esse mesmo caminho em qualquer recriação do projeto, integração por botão de deploy ou ajuste manual de build settings.
+- Não tente configurar `rootDirectory` em `vercel.json`, porque o schema da Vercel rejeita essa propriedade.
 - Sempre valide `pnpm typecheck` e `pnpm run build` dentro de `Deploy/` antes de publicar mudanças de infraestrutura ou dependências.
 
 ## Impacto prático

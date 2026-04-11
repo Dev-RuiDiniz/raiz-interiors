@@ -95,4 +95,5 @@ Detailed setup and staging strategy: `doc/setup-staging.md`.
 
 - Repository Root Directory: `Deploy`
 - Install, typecheck and build commands for production must run from this folder
+- Do not add `rootDirectory` to `vercel.json`; configure it in the Vercel project settings instead
 - Operational rationale is documented in `../docs/vercel-deploy.md`

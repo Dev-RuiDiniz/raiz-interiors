@@ -58,6 +58,7 @@ Este repositório está configurado para publicar a versão de `Deploy/` na Verc
 
 - Defina o Root Directory do projeto como `Deploy`.
 - Mantenha qualquer override manual do dashboard alinhado com esse mesmo caminho.
+- Não use `rootDirectory` em `vercel.json`, porque essa propriedade não faz parte do schema aceito pela Vercel.
 - A documentação operacional dessa decisão está em `docs/vercel-deploy.md`.
 
 ## GitHub
