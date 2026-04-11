@@ -1,1 +1,0 @@
-Audit placeholder file created to satisfy tool contract. No project files were modified.
