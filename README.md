@@ -16,7 +16,9 @@ Website da RAIZ Interiors construído com Next.js, TypeScript e Tailwind CSS.
 - `src/`: aplicação principal
 - `public/`: imagens e assets públicos
 - `prisma/`: schema e configuração do banco
-- `Deploy/`: snapshot preservado da versão atual do projeto, limpo de artefatos pesados e temporários
+- `Deploy/`: snapshot preservado da versão atual do projeto, limpo de artefatos pesados e temporários, usado apenas como referência
+
+Novas alterações de produto devem ser feitas em `src/`. A pasta `Deploy/` não participa do `build`, `typecheck` nem do deploy da Vercel da aplicação principal.
 
 ## Rodando localmente
 

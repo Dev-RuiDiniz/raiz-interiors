@@ -20,6 +20,13 @@ interface ProjectDetailClientProps {
   }
 }
 
+interface ProjectImageAsset {
+  src: string
+  blurDataURL?: string
+  avifSrcSet?: string
+  webpSrcSet?: string
+}
+
 export function ProjectDetailClient({ locale, dict, project, adjacent }: ProjectDetailClientProps) {
   const labels = dict.labels
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null)
@@ -40,10 +47,11 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
         }
 
   const activeImage = activeImageIndex !== null ? project.images[activeImageIndex] : null
+  const activeImageNumber = activeImageIndex !== null ? activeImageIndex + 1 : 0
 
-  const projectImages = useMemo(
+  const projectImages = useMemo<ProjectImageAsset[]>(
     () =>
-      project.images.map((image: string) => ({
+      project.images.map((image: string, index: number) => ({
         src: image,
         ...getAdjacentAssetPaths(image),
       })),
@@ -228,12 +236,12 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
 
             <div className="relative mx-12 flex h-[88vh] w-full items-center justify-center overflow-hidden bg-black/78 p-4 shadow-[0_24px_80px_-28px_rgba(0,0,0,0.8)] sm:mx-16 sm:p-6">
               {activeImage !== null && (
-                <SiteImage
-                  src={activeImage}
-                  alt={`${project.title} - Image ${activeImageIndex + 1}`}
-                  assetMode="original"
-                  fill
-                  priority
+                  <SiteImage
+                    src={activeImage}
+                    alt={`${project.title} - Image ${activeImageNumber}`}
+                    assetMode="original"
+                    fill
+                    priority
                   sizes="100vw"
                   className="object-contain"
                 />
@@ -249,7 +257,7 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
               </button>
 
               <div className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 rounded-full bg-black/55 px-3 py-1.5 font-inter text-[10px] tracking-[0.18em] uppercase text-white/80 backdrop-blur-sm">
-                {(activeImageIndex ?? 0) + 1} / {project.images.length}
+                {activeImageNumber} / {project.images.length}
               </div>
             </div>
 
