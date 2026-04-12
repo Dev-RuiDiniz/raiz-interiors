@@ -19,7 +19,8 @@ export function usePageLayout(pageKey: string, sectionKey: string): UsePageLayou
     async function loadLayout() {
       try {
         const response = await fetch(
-          `/api/page-layout?pageKey=${encodeURIComponent(pageKey)}&sectionKey=${encodeURIComponent(sectionKey)}`
+          `/api/page-layout?pageKey=${encodeURIComponent(pageKey)}&sectionKey=${encodeURIComponent(sectionKey)}`,
+          { cache: 'no-store' }
         )
         if (!response.ok) {
           throw new Error('Failed to load page layout')

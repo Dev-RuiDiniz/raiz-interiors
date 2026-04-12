@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { defaultProjectDetails, defaultProjects } from '@/lib/cms/default-projects'
@@ -138,7 +139,7 @@ export async function createLocalProject(payload: ProjectPayload) {
   const records = await readStore()
   const now = toIsoNow()
   const created: LocalProjectRecord = {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     slug: payload.slug,
     title: payload.title,
     subtitle: payload.subtitle || '',
@@ -193,6 +194,7 @@ export async function upsertLocalProjectByIdOrFallbackSlug(id: string, payload: 
     credits: payload.credits || '',
     featured: payload.featured,
     order: payload.order,
+    images: payload.images?.map((image) => image.url).filter(Boolean) || [],
     updatedAt: now,
   }
 

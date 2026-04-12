@@ -1,70 +1,99 @@
 # RAIZ Interiors
 
-Website da RAIZ Interiors construído com Next.js, TypeScript e Tailwind CSS.
+> Premium Interior Design Studio Website
 
-## Stack
+A modern, sophisticated website for RAIZ Interiors - a design studio dedicated to creating meaningful spaces that tell your story.
 
-- Next.js 16
-- React 19
-- TypeScript
-- Tailwind CSS
-- Prisma
-- NextAuth
+## Features
 
-## Estrutura importante
+- **Modern Stack**: Next.js 14+ with App Router, TypeScript, Tailwind CSS
+- **Elegant Design**: Minimalist aesthetic with sophisticated typography
+- **Fully Responsive**: Optimized for all device sizes
+- **Animations**: Smooth transitions with Framer Motion
+- **Component Library**: Shadcn/ui + Radix UI
+- **Database Ready**: Prisma ORM with PostgreSQL schema
+- **Form Validation**: React Hook Form + Zod
+- **GDPR Compliant**: Cookie consent banner
+- **WhatsApp Integration**: Floating chat widget
 
-- `src/`: aplicação principal
-- `public/`: imagens e assets públicos
-- `prisma/`: schema e configuração do banco
-- `Deploy/`: aplicação que a Vercel deve construir em produção, mantida como unidade isolada de deploy dentro da raiz do repositório
+## Pages
 
-Para o deploy hospedado na Vercel, a decisão atual do projeto é usar `Deploy/` como Root Directory. A raiz continua útil para desenvolvimento e comparação, mas o pipeline publicado deve instalar dependências, rodar `build` e ler a configuração a partir de `Deploy/`.
+- **Home** - Hero, featured projects, services preview
+- **Projects** - Grid layout with filters + individual project pages
+- **Services** - Service offerings + process diagram
+- **About** - Studio story, values, Instagram feed
+- **Contact** - Contact form with validation
 
-## Rodando localmente
+## Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| Framework | Next.js 14+ |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| Components | Shadcn/ui, Radix UI |
+| Animations | Framer Motion |
+| Database | PostgreSQL + Prisma |
+| Validation | Zod |
+| Forms | React Hook Form |
+
+## Getting Started
 
 ```bash
-npm install
-npm run dev
+# Install dependencies
+pnpm install
+
+# Run development server
+pnpm dev
+
+# Build for production
+pnpm build
 ```
 
-Para produção:
+## Environment Variables
 
-```bash
-npm run build
-npm start
+Create a `.env` file with:
+
+```env
+DATABASE_URL="postgresql://..."
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-secret"
 ```
 
-## Variáveis de ambiente
+## Deploy
 
-Use `.env.example` como base:
+Ready for deployment on Vercel:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/WBianchi/raiz-interiors&root-directory=Deploy)
+
+This directory is the official Root Directory for Vercel in this repository. Build and deployment settings must point to `Deploy/` at the repository root.
+
+---
+
+Developed with care for RAIZ Interiors.
+# raiz_interiors_site
+## Environment Variables
+
+Use `.env.example` as base:
 
 ```bash
 cp .env.example .env.local
 ```
 
-Valores disponíveis:
+Minimum required values:
 
 ```env
-DATABASE_URL=""
-DIRECT_URL=""
+DATABASE_URL="postgresql://..."
 NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="dev-only-nextauth-secret"
-APIFY_API_TOKEN=""
+NEXTAUTH_SECRET="your-secret"
+APIFY_API_TOKEN="" # optional unless using /api/instagram/sync
 ```
 
-## Preview na Vercel
+Detailed setup and staging strategy: `doc/setup-staging.md`.
 
-Este repositório está configurado para publicar a versão de `Deploy/` na Vercel.
+## Vercel root directory
 
-- Defina o Root Directory do projeto como `Deploy`.
-- Mantenha qualquer override manual do dashboard alinhado com esse mesmo caminho.
-- Não use `rootDirectory` em `vercel.json`, porque essa propriedade não faz parte do schema aceito pela Vercel.
-- Para um projeto Vercel já existente, ajuste esse caminho no dashboard e redeploye a `main`.
-- A documentação operacional dessa decisão está em `docs/vercel-deploy.md`.
-
-## GitHub
-
-Repositório esperado:
-
-- Nome: `raiz-interiors`
-- Descrição: `Premium interior design studio website built with Next.js for RAIZ Interiors.`
+- Repository Root Directory: `Deploy`
+- Install, typecheck and build commands for production must run from this folder
+- Do not add `rootDirectory` to `vercel.json`; configure it in the Vercel project settings instead
+- Operational rationale is documented in `../docs/vercel-deploy.md`

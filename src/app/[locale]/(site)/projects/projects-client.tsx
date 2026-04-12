@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { SiteImage } from '@/components/ui/site-image'
 import { cn } from '@/lib/utils'
 
@@ -15,36 +14,52 @@ export function ProjectsClient({ locale, dict, projects }: ProjectsClientProps) 
   return (
     <>
       {/* Hero Section - Frase minimalista */}
-      <section className="relative pt-32 pb-8 lg:pt-40 lg:pb-12 bg-[#E3DFDD]">
-        <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto text-center"
-          >
-            <p 
-              className="font-cormorant text-base sm:text-lg lg:text-xl font-light text-stone-600 leading-relaxed"
+      <section
+        className="relative pt-32 pb-8 lg:pt-40 lg:pb-12"
+        style={{ backgroundColor: dict.hero.backgroundColor || '#E3DFDD' }}
+      >
+        {dict.hero.backgroundImage && (
+          <div className="absolute inset-0">
+            <SiteImage
+              src={dict.hero.backgroundImage}
+              alt={dict.hero.heading || 'Projects background'}
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-white/80" />
+          </div>
+        )}
+        <div className="container relative z-10 mx-auto px-4 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center">
+            {dict.hero.heading && (
+              <p
+                className="mb-4 font-inter text-[10px] sm:text-xs tracking-[0.24em] uppercase"
+                style={{ color: dict.hero.badgeColor || '#44403c' }}
+              >
+                {dict.hero.heading}
+              </p>
+            )}
+            <p
+              className="font-cormorant text-base sm:text-lg lg:text-xl font-light leading-relaxed"
+              style={{ color: dict.hero.titleColor || '#57534e' }}
               dangerouslySetInnerHTML={{ __html: dict.hero.text }}
             />
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Projects Grid - 3 colunas */}
-      <section className="py-8 lg:py-12 bg-[#E3DFDD]">
+      <section
+        className="py-8 lg:py-12"
+        style={{ backgroundColor: dict.hero.backgroundColor || '#E3DFDD' }}
+      >
         <div className="px-2 lg:px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-3">
-            {projects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.03 }}
-              >
+            {projects.map((project) => (
+              <div key={project.id}>
                 <ProjectCard locale={locale} dict={dict} project={project} />
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

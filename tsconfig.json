@@ -30,12 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": [
-    "node_modules",
-    "Deploy",
-    "deploy_bundle_2026_04_01",
-    "deploy_bundle_perf_2026_04_01",
-    "tmp",
-    ".next"
-  ]
+  "exclude": ["node_modules"]
 }

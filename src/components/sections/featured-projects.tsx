@@ -11,6 +11,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { SiteImage } from '@/components/ui/site-image'
 import { cn } from '@/lib/utils'
+import { Locale } from '@/i18n/config'
 
 interface Project {
   id: string
@@ -20,8 +21,6 @@ interface Project {
   coverImage: string
   status: 'PUBLISHED' | 'COMING_SOON' | 'WORK_IN_PROGRESS'
 }
-
-import { Locale } from '@/i18n/config'
 
 interface FeaturedProjectsProps {
   projects: Project[]
@@ -38,7 +37,6 @@ export function FeaturedProjects({ projects, dict, locale }: FeaturedProjectsPro
   return (
     <section className="bg-[#e3dfdc] py-16 lg:py-20">
       <div className="container mx-auto px-6 lg:px-12">
-        {/* Header - Minimalista, sem h1 grande */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -62,7 +60,6 @@ export function FeaturedProjects({ projects, dict, locale }: FeaturedProjectsPro
           </Link>
         </motion.div>
 
-        {/* Projects Grid - Grafismo igual ao menu de projetos */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
           {projects.map((project, index) => (
             <motion.div
@@ -85,9 +82,9 @@ function ProjectCard({ project, dict, locale }: { project: Project; dict: any; l
   const isComingSoon = project.status === 'COMING_SOON'
   const isWorkInProgress = project.status === 'WORK_IN_PROGRESS'
 
-  const statusLabel = isComingSoon 
+  const statusLabel = isComingSoon
     ? dict.coming_soon
-    : isWorkInProgress 
+    : isWorkInProgress
       ? dict.work_in_progress
       : null
 
@@ -99,7 +96,6 @@ function ProjectCard({ project, dict, locale }: { project: Project; dict: any; l
         isComingSoon && 'cursor-default'
       )}
     >
-      {/* Image */}
       <div className="absolute inset-0">
         <SiteImage
           src={project.coverImage}
@@ -111,7 +107,6 @@ function ProjectCard({ project, dict, locale }: { project: Project; dict: any; l
             !isComingSoon && 'group-hover:scale-105'
           )}
         />
-        {/* Overlay - sem preto puro */}
         <div
           className={cn(
             'absolute inset-0 transition-opacity duration-500',
@@ -122,7 +117,6 @@ function ProjectCard({ project, dict, locale }: { project: Project; dict: any; l
         />
       </div>
 
-      {/* Content - Centrado, grafismo igual ao menu projetos */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full p-4 text-center">
         <h3 className="font-cormorant text-sm sm:text-base lg:text-lg font-light text-white leading-tight tracking-wide">
           {project.title}
@@ -130,8 +124,7 @@ function ProjectCard({ project, dict, locale }: { project: Project; dict: any; l
         <p className="font-inter text-[8px] sm:text-[9px] tracking-[0.12em] uppercase text-white/70 mt-1.5">
           {project.location}
         </p>
-        
-        {/* Status Badge */}
+
         {statusLabel && (
           <span className="mt-1 font-inter text-[7px] sm:text-[8px] tracking-[0.1em] lowercase text-white/60 italic">
             {statusLabel}

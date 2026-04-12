@@ -8,9 +8,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  outputFileTracingRoot: process.cwd(),
   productionBrowserSourceMaps: false,
   images: {
-    formats: ['image/avif', 'image/webp'],
+    unoptimized: true,
     qualities: [75, 85],
     remotePatterns: [
       {
@@ -39,33 +40,6 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/_next/static/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/uploads/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/raizlogo_white.png',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/raizlogo_preta.png',
         headers: [
           {
             key: 'Cache-Control',

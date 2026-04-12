@@ -7,10 +7,6 @@ Guia rapido: consulte imports no topo, depois tipos/constantes, e por fim a expo
 import { NextResponse } from "next/server";
 import { syncInstagramPosts } from "@/lib/instagram-sync";
 
-const instagramCacheHeaders = {
-  "Cache-Control": "public, s-maxage=300, stale-while-revalidate=1800",
-};
-
 // GET /api/instagram/posts - Buscar posts do banco
 export async function GET(request: Request) {
   try {
@@ -22,7 +18,7 @@ export async function GET(request: Request) {
 
     const { prisma } = await import("@/lib/prisma");
     if (!prisma) {
-      return NextResponse.json([], { headers: instagramCacheHeaders });
+      return NextResponse.json([]);
     }
 
     const { searchParams } = new URL(request.url);
@@ -35,9 +31,9 @@ export async function GET(request: Request) {
       take: limit,
     });
 
-    return NextResponse.json(posts, { headers: instagramCacheHeaders });
+    return NextResponse.json(posts);
   } catch (error) {
     // Retorna array vazio se tabela não existir ou outro erro
-    return NextResponse.json([], { headers: instagramCacheHeaders });
+    return NextResponse.json([]);
   }
 }

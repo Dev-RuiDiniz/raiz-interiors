@@ -10,10 +10,8 @@ export default async function ServiceDetailPage({
 }) {
   const { locale, slug } = await params
   const localeValue = locale as Locale
-  const [dict, baseService] = await Promise.all([
-    getDictionary(localeValue),
-    getServiceDetailContent(slug),
-  ])
+  const dict = await getDictionary(localeValue)
+  const baseService = await getServiceDetailContent(slug)
   const preferDictionary = localeValue === 'pt'
 
   const detailDict = dict.services.detail as any

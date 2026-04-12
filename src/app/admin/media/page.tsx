@@ -6,17 +6,17 @@ import { Check, Copy, Grid, Image as ImageIcon, List, Loader2, Search } from 'lu
 import { cn } from '@/lib/utils'
 
 type ProjectImage = {
-  id: string
-  url: string
-  alt: string | null
+  id?: string
+  url?: string | null
+  alt?: string | null
 }
 
 type ProjectRecord = {
   id: string
   slug: string
   title: string
-  coverImage: string
-  images?: ProjectImage[]
+  coverImage: string | null
+  images?: Array<ProjectImage | string>
 }
 
 type ServiceRecord = {
@@ -24,7 +24,7 @@ type ServiceRecord = {
   slug: string
   title: string
   coverImage: string | null
-  images?: ProjectImage[]
+  images?: Array<ProjectImage | string>
 }
 
 type MediaFile = {
@@ -42,8 +42,8 @@ function extractName(url: string) {
   return parts[parts.length - 1] || cleaned
 }
 
-function normalizeUrl(input: string) {
-  return input.trim()
+function normalizeUrl(input: string | null | undefined) {
+  return typeof input === 'string' ? input.trim() : ''
 }
 
 export default function MediaPage() {
@@ -84,9 +84,12 @@ export default function MediaPage() {
         const projects = (await projectsResponse.json()) as ProjectRecord[]
         const services = (await servicesResponse.json()) as ServiceRecord[]
 
+        const safeProjects = Array.isArray(projects) ? projects : []
+        const safeServices = Array.isArray(services) ? services : []
+
         const map = new Map<string, MediaFile>()
 
-        const pushFile = (url: string, source: string, updatedAt?: string) => {
+        const pushFile = (url: string | null | undefined, source: string, updatedAt?: string) => {
           const normalized = normalizeUrl(url)
           if (!normalized) return
           if (map.has(normalized)) return
@@ -100,17 +103,17 @@ export default function MediaPage() {
           })
         }
 
-        for (const project of projects || []) {
-          pushFile(project.coverImage, `project:${project.slug}`)
-          for (const image of project.images || []) {
-            pushFile(image.url, `project:${project.slug}`)
+        for (const project of safeProjects) {
+          pushFile(project?.coverImage, `project:${project?.slug ?? 'unknown'}`)
+          for (const image of Array.isArray(project?.images) ? project.images : []) {
+            pushFile(typeof image === 'string' ? image : image?.url, `project:${project?.slug ?? 'unknown'}`)
           }
         }
 
-        for (const service of services || []) {
-          if (service.coverImage) pushFile(service.coverImage, `service:${service.slug}`)
-          for (const image of service.images || []) {
-            pushFile(image.url, `service:${service.slug}`)
+        for (const service of safeServices) {
+          pushFile(service?.coverImage, `service:${service?.slug ?? 'unknown'}`)
+          for (const image of Array.isArray(service?.images) ? service.images : []) {
+            pushFile(typeof image === 'string' ? image : image?.url, `service:${service?.slug ?? 'unknown'}`)
           }
         }
 
@@ -120,7 +123,11 @@ export default function MediaPage() {
         setMediaFiles(merged)
       } catch (error) {
         if (!active) return
-        setLoadError(error instanceof Error ? error.message : 'Erro ao carregar media.')
+        setLoadError(
+          error instanceof Error
+            ? `${error.message}${error.stack ? `\n\n${error.stack}` : ''}`
+            : 'Erro ao carregar media.'
+        )
         setMediaFiles([])
       } finally {
         if (active) setLoading(false)

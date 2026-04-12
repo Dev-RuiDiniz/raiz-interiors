@@ -1,13 +1,12 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { SiteImage } from '@/components/ui/site-image'
-import { getAdjacentAssetPaths } from '@/lib/asset-variants'
 import { cn } from '@/lib/utils'
 
 interface ProjectDetailClientProps {
@@ -20,16 +19,10 @@ interface ProjectDetailClientProps {
   }
 }
 
-interface ProjectImageAsset {
-  src: string
-  blurDataURL?: string
-  avifSrcSet?: string
-  webpSrcSet?: string
-}
-
 export function ProjectDetailClient({ locale, dict, project, adjacent }: ProjectDetailClientProps) {
   const labels = dict.labels
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null)
+  const useOptimizedProjectImages = project.slug === 'elegant-timeless-duplex'
 
   const lightboxLabels =
     locale === 'pt'
@@ -45,29 +38,6 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
           next: 'Next image',
           close: 'Close gallery',
         }
-
-  const activeImage = activeImageIndex !== null ? project.images[activeImageIndex] : null
-  const activeImageNumber = activeImageIndex !== null ? activeImageIndex + 1 : 0
-
-  const projectImages = useMemo<ProjectImageAsset[]>(
-    () =>
-      project.images.map((image: string, index: number) => ({
-        src: image,
-        ...getAdjacentAssetPaths(image),
-      })),
-    [project.images]
-  )
-
-  const coverAsset = useMemo(() => getAdjacentAssetPaths(project.coverImage), [project.coverImage])
-
-  const preloadIndices = useMemo(() => {
-    if (activeImageIndex === null || project.images.length < 2) return []
-
-    const previous = (activeImageIndex - 1 + project.images.length) % project.images.length
-    const next = (activeImageIndex + 1) % project.images.length
-
-    return previous === next ? [previous] : [previous, next]
-  }, [activeImageIndex, project.images.length])
 
   useEffect(() => {
     if (activeImageIndex === null) return
@@ -100,16 +70,21 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
   }, [activeImageIndex, project.images.length])
 
   useEffect(() => {
-    if (typeof window === 'undefined' || preloadIndices.length === 0) return
+    if (activeImageIndex === null || project.images.length <= 1) return
 
-    preloadIndices.forEach((index) => {
-      const image = project.images[index]
-      if (!image) return
+    const nextIndex = (activeImageIndex + 1) % project.images.length
+    const previousIndex = (activeImageIndex - 1 + project.images.length) % project.images.length
 
-      const img = new window.Image()
-      img.src = image
+    const preloadTargets = [project.images[nextIndex], project.images[previousIndex]].filter(Boolean)
+
+    preloadTargets.forEach((src: string) => {
+      const image = new window.Image()
+      image.src = getProjectImageSrc(src)
     })
-  }, [preloadIndices, project.images])
+  }, [activeImageIndex, project.images])
+
+  const getProjectImageSrc = (src: string) =>
+    useOptimizedProjectImages ? src : `${src}?hq=project-detail-v2`
 
   const showPreviousImage = () => {
     setActiveImageIndex((current) => {
@@ -127,38 +102,38 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
 
   return (
     <>
-      <section className="relative h-[50vh] overflow-hidden lg:h-[60vh]">
+      {/* Hero Cover */}
+      <section className="relative h-[50vh] lg:h-[60vh] overflow-hidden">
         <div className="absolute inset-0">
           <SiteImage
-            src={project.coverImage}
+            src={getProjectImageSrc(project.coverImage)}
             alt={project.title}
             fill
+            preserveQuality={!useOptimizedProjectImages}
             priority
             sizes="100vw"
             className="object-cover"
-            blurDataURL={coverAsset.blurDataURL}
-            placeholder={coverAsset.blurDataURL ? 'blur' : 'empty'}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
         </div>
 
-        <div className="relative z-10 container mx-auto flex h-full flex-col justify-end px-6 pb-12 lg:px-12 lg:pb-16">
+        <div className="relative z-10 container mx-auto px-6 lg:px-12 h-full flex flex-col justify-end pb-12 lg:pb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="font-cormorant text-3xl font-light leading-tight text-white sm:text-4xl lg:text-5xl">
+            <h1 className="font-cormorant text-3xl sm:text-4xl lg:text-5xl font-light text-white leading-tight">
               {project.title} {project.subtitle && <span className="italic">{project.subtitle}</span>}
             </h1>
-            <p className="mt-2 font-inter text-sm uppercase tracking-wide text-white/80">
+            <p className="mt-2 font-inter text-sm text-white/80 uppercase tracking-wide">
               {project.location}
             </p>
           </motion.div>
         </div>
       </section>
 
-      <section className="bg-[#CFCAC7] py-12 lg:py-16">
+      <section className="py-12 lg:py-16 bg-[#CFCAC7]">
         <div className="container mx-auto px-6 lg:px-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -167,19 +142,19 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
             transition={{ duration: 0.6 }}
             className="max-w-3xl"
           >
-            <div className="font-inter whitespace-pre-line text-sm leading-relaxed text-stone-600">
+            <div className="font-inter text-sm text-stone-600 leading-relaxed whitespace-pre-line">
               {project.description}
             </div>
           </motion.div>
         </div>
       </section>
 
-      <section className="bg-[#CFCAC7] py-8 lg:py-12">
+      <section className="py-8 lg:py-12 bg-[#CFCAC7]">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-2 gap-3 lg:gap-6">
-            {projectImages.map((image, index) => (
+            {project.images.map((image: string, index: number) => (
               <motion.div
-                key={`${image.src}-${index}`}
+                key={`${image}-${index}`}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -194,13 +169,12 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
                   <AspectRatio ratio={4 / 5} className="overflow-hidden bg-stone-300">
                     <div className="absolute inset-0 border border-stone-100/60 shadow-[0_18px_40px_-24px_rgba(28,25,23,0.8)]">
                       <SiteImage
-                        src={image.src}
+                        src={getProjectImageSrc(image)}
                         alt={`${project.title} - Image ${index + 1}`}
                         fill
-                        sizes="(min-width: 1024px) 50vw, 100vw"
+                        preserveQuality={!useOptimizedProjectImages}
+                        sizes="(min-width: 1024px) 50vw, 50vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                        blurDataURL={image.blurDataURL}
-                        placeholder={image.blurDataURL ? 'blur' : 'empty'}
                       />
                       <div className="absolute inset-0 bg-gradient-to-b from-stone-950/5 via-transparent to-stone-950/20" />
                     </div>
@@ -235,14 +209,15 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
             )}
 
             <div className="relative mx-12 flex h-[88vh] w-full items-center justify-center overflow-hidden bg-black/78 p-4 shadow-[0_24px_80px_-28px_rgba(0,0,0,0.8)] sm:mx-16 sm:p-6">
-              {activeImage !== null && (
-                  <SiteImage
-                    src={activeImage}
-                    alt={`${project.title} - Image ${activeImageNumber}`}
-                    assetMode="original"
-                    fill
-                    priority
-                  sizes="100vw"
+              {activeImageIndex !== null && (
+                <SiteImage
+                  key={project.images[activeImageIndex]}
+                  src={getProjectImageSrc(project.images[activeImageIndex])}
+                  alt={`${project.title} - Image ${activeImageIndex + 1}`}
+                  fill
+                  preserveQuality={!useOptimizedProjectImages}
+                  loading="eager"
+                  sizes="(min-width: 1280px) 80vw, 100vw"
                   className="object-contain"
                 />
               )}
@@ -257,7 +232,7 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
               </button>
 
               <div className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 rounded-full bg-black/55 px-3 py-1.5 font-inter text-[10px] tracking-[0.18em] uppercase text-white/80 backdrop-blur-sm">
-                {activeImageNumber} / {project.images.length}
+                {(activeImageIndex ?? 0) + 1} / {project.images.length}
               </div>
             </div>
 
@@ -278,14 +253,14 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
         </DialogContent>
       </Dialog>
 
-      <section className="bg-[#CFCAC7] py-10 lg:py-14">
+      <section className="py-10 lg:py-14 bg-[#CFCAC7]">
         <div className="container mx-auto px-6 lg:px-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 lg:gap-3"
+            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 lg:gap-3"
           >
             <DetailItem label={labels.location} value={project.location} />
             <DetailItem label={labels.year} value={project.year} />
@@ -297,35 +272,35 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
         </div>
       </section>
 
-      <section className="border-t border-stone-500/20 bg-[#B4ADA8] py-10 lg:py-14">
+      <section className="py-10 lg:py-14 bg-[#B4ADA8] border-t border-stone-500/20">
         <div className="container mx-auto px-6 lg:px-12">
-          <div className="flex flex-col items-center justify-between gap-8 sm:flex-row">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-8">
             <Link
               href={`/${locale}/projects`}
-              className="group inline-flex items-center gap-3 font-inter text-xs uppercase tracking-[0.2em] text-stone-600 transition-colors hover:text-stone-900"
+              className="inline-flex items-center gap-3 font-inter text-xs tracking-[0.2em] uppercase text-stone-600 hover:text-stone-900 transition-colors group"
             >
-              <ArrowLeft size={16} className="transform transition-transform group-hover:-translate-x-1" />
+              <ArrowLeft size={16} className="transform group-hover:-translate-x-1 transition-transform" />
               <span>{labels.back}</span>
             </Link>
 
             <div className="flex items-center gap-8">
               {adjacent.prev && (
-                <Link href={`/${locale}/projects/${adjacent.prev.slug}`} className="group text-right">
-                  <span className="mb-1 block font-inter text-[10px] uppercase tracking-[0.2em] text-stone-400">
+                <Link href={`/${locale}/projects/${adjacent.prev.slug}`} className="text-right group">
+                  <span className="block font-inter text-[10px] tracking-[0.2em] uppercase text-stone-400 mb-1">
                     {labels.prev}
                   </span>
-                  <span className="font-cormorant text-lg text-stone-600 transition-colors group-hover:text-stone-900">
+                  <span className="font-cormorant text-lg text-stone-600 group-hover:text-stone-900 transition-colors">
                     {adjacent.prev.title}
                   </span>
                 </Link>
               )}
 
               {adjacent.next && (
-                <Link href={`/${locale}/projects/${adjacent.next.slug}`} className="group text-left">
-                  <span className="mb-1 block font-inter text-[10px] uppercase tracking-[0.2em] text-stone-400">
+                <Link href={`/${locale}/projects/${adjacent.next.slug}`} className="text-left group">
+                  <span className="block font-inter text-[10px] tracking-[0.2em] uppercase text-stone-400 mb-1">
                     {labels.next}
                   </span>
-                  <span className="font-cormorant text-lg text-stone-600 transition-colors group-hover:text-stone-900">
+                  <span className="font-cormorant text-lg text-stone-600 group-hover:text-stone-900 transition-colors">
                     {adjacent.next.title}
                   </span>
                 </Link>
@@ -341,10 +316,10 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-b border-stone-200 pb-3 md:border-b-0">
-      <span className="mb-1 block font-inter text-[9px] uppercase tracking-[0.2em] text-stone-400">
+      <span className="block font-inter text-[9px] tracking-[0.2em] uppercase text-stone-400 mb-1">
         {label}
       </span>
-      <span className="font-inter text-[9px] leading-tight text-stone-800">{value}</span>
+      <span className="font-inter text-[9px] text-stone-800 leading-tight">{value}</span>
     </div>
   )
 }

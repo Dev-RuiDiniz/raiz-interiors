@@ -1,5 +1,5 @@
-import { PageEditor } from '@/components/admin/page-editor'
+import { HomeBlockEditor } from '@/components/admin/home-block-editor'
 
 export default function AdminPageHomeEditor() {
-  return <PageEditor pageId="home" />
+  return <HomeBlockEditor />
 }

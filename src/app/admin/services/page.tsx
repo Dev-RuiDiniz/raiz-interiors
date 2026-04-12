@@ -32,8 +32,7 @@ export default function ServicesPage() {
       try {
         const response = await fetch('/api/admin/services', { cache: 'no-store' })
         if (!response.ok) {
-          const errorText = await response.text().catch(() => '')
-          throw new Error(errorText || 'Nao foi possivel carregar servicos.')
+          throw new Error('Nao foi possivel carregar servicos.')
         }
 
         const data = (await response.json()) as Array<{
@@ -113,7 +112,7 @@ export default function ServicesPage() {
       </div>
 
       {loadError && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 whitespace-pre-wrap break-words">
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {loadError}
         </div>
       )}

@@ -33,6 +33,7 @@ function toIsoNow() {
 
 function createSeedServices(): LocalServiceRecord[] {
   const now = toIsoNow()
+
   return defaultServices.map((service) => {
     const detail = defaultServiceDetails[service.slug]
 
@@ -75,8 +76,13 @@ function sanitizeRecord(input: unknown): LocalServiceRecord | null {
       : [],
     order: Number.isFinite(value.order) ? Number(value.order) : 0,
     status: (value.status as ServicePayload['status']) || 'DRAFT',
-    active: typeof value.active === 'boolean' ? value.active : (value.status as ServicePayload['status']) === 'PUBLISHED',
-    images: Array.isArray(value.images) ? value.images.map((item) => String(item)).filter(Boolean) : [],
+    active:
+      typeof value.active === 'boolean'
+        ? value.active
+        : (value.status as ServicePayload['status']) === 'PUBLISHED',
+    images: Array.isArray(value.images)
+      ? value.images.map((item) => String(item)).filter(Boolean)
+      : [],
     createdAt: typeof value.createdAt === 'string' ? value.createdAt : now,
     updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : now,
   }
@@ -86,8 +92,13 @@ async function readStore(): Promise<LocalServiceRecord[]> {
   try {
     const raw = await readFile(storePath, 'utf8')
     const parsed = JSON.parse(raw) as unknown
+
     if (!Array.isArray(parsed)) return createSeedServices()
-    const records = parsed.map(sanitizeRecord).filter((record): record is LocalServiceRecord => Boolean(record))
+
+    const records = parsed
+      .map(sanitizeRecord)
+      .filter((record): record is LocalServiceRecord => Boolean(record))
+
     return records.length ? records : createSeedServices()
   } catch {
     return createSeedServices()
@@ -124,6 +135,7 @@ export async function getLocalServiceByIdOrFallbackSlug(id: string) {
 
   const fallbackSlug = resolveFallbackSlugFromLegacyId(id)
   if (!fallbackSlug) return null
+
   return records.find((record) => record.slug === fallbackSlug) || null
 }
 
@@ -157,9 +169,8 @@ export async function upsertLocalServiceByIdOrFallbackSlug(id: string, payload: 
   const records = await readStore()
   const existing = records.find((record) => record.id === id)
   const fallbackSlug = resolveFallbackSlugFromLegacyId(id)
-  const fallback = !existing && fallbackSlug
-    ? records.find((record) => record.slug === fallbackSlug)
-    : null
+  const fallback =
+    !existing && fallbackSlug ? records.find((record) => record.slug === fallbackSlug) : null
   const target = existing || fallback
   const now = toIsoNow()
 
@@ -198,9 +209,8 @@ export async function deleteLocalServiceByIdOrFallbackSlug(id: string) {
   const records = await readStore()
   const existing = records.find((record) => record.id === id)
   const fallbackSlug = resolveFallbackSlugFromLegacyId(id)
-  const fallback = !existing && fallbackSlug
-    ? records.find((record) => record.slug === fallbackSlug)
-    : null
+  const fallback =
+    !existing && fallbackSlug ? records.find((record) => record.slug === fallbackSlug) : null
   const target = existing || fallback
 
   if (!target) return false

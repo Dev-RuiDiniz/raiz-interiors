@@ -1,22 +1,14 @@
 'use client'
 
-import { use, useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Bold, CaseLower, CaseSensitive, CaseUpper, Eye, Italic, Loader2, Save } from 'lucide-react'
+import { ArrowLeft, Eye, Loader2, Save } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import { GalleryLayoutField } from '@/components/admin/gallery-layout-field'
 import { createDefaultBox, normalizeGalleryLayout, type GalleryLayout } from '@/lib/cms/layout-types'
-import type { JsonValue } from '@/lib/cms/dictionary-utils'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -37,225 +29,6 @@ type EditableProject = {
   credits: string
   featured: boolean
   order: number
-}
-
-function wrapSelection(
-  text: string,
-  selectionStart: number,
-  selectionEnd: number,
-  before: string,
-  after: string
-) {
-  const start = Math.max(0, selectionStart)
-  const end = Math.max(start, selectionEnd)
-  return text.slice(0, start) + before + text.slice(start, end) + after + text.slice(end)
-}
-
-function transformSelection(text: string, selectionStart: number, selectionEnd: number, mode: 'upper' | 'lower') {
-  const start = Math.max(0, selectionStart)
-  const end = Math.max(start, selectionEnd)
-  const selected = text.slice(start, end)
-  const transformed = mode === 'upper' ? selected.toUpperCase() : selected.toLowerCase()
-  return text.slice(0, start) + transformed + text.slice(end)
-}
-
-function ProjectTextField({
-  label,
-  value,
-  onChange,
-  multiline = false,
-  helper,
-}: {
-  label: string
-  value: string
-  onChange: (value: string) => void
-  multiline?: boolean
-  helper?: string
-}) {
-  const [open, setOpen] = useState(false)
-  const [fontFamily, setFontFamily] = useState('inherit')
-  const [fontSize, setFontSize] = useState('16')
-  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null)
-
-  const applyMarkup = (before: string, after: string) => {
-    const el = inputRef.current
-    if (!el) return
-    const nextValue = wrapSelection(value, el.selectionStart ?? 0, el.selectionEnd ?? 0, before, after)
-    onChange(nextValue)
-  }
-
-  const applyTransform = (mode: 'upper' | 'lower') => {
-    const el = inputRef.current
-    if (!el) return
-    const nextValue = transformSelection(value, el.selectionStart ?? 0, el.selectionEnd ?? 0, mode)
-    onChange(nextValue)
-  }
-
-  const applyFontStyle = () => {
-    const el = inputRef.current
-    if (!el) return
-    const start = el.selectionStart ?? 0
-    const end = el.selectionEnd ?? 0
-    if (start === end) return
-    onChange(
-      wrapSelection(
-        value,
-        start,
-        end,
-        `<span style="font-family:${fontFamily}; font-size:${fontSize}px">`,
-        '</span>'
-      )
-    )
-  }
-
-  return (
-    <>
-      <div className="rounded-[1.75rem] border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-800 dark:bg-stone-950/70">
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <div className="space-y-1">
-            <Label className="text-[11px] uppercase tracking-[0.22em] text-stone-500 dark:text-stone-400">
-              {label}
-            </Label>
-            {helper && <p className="font-inter text-xs text-stone-400 dark:text-stone-500">{helper}</p>}
-          </div>
-          <Button type="button" variant="outline" size="sm" onClick={() => setOpen(true)} className="h-9 rounded-full px-4">
-            Editar
-          </Button>
-        </div>
-
-        <div className="mb-3 flex flex-wrap gap-2">
-          <Button type="button" variant="outline" size="sm" onClick={() => applyMarkup('<strong>', '</strong>')}>
-            <Bold size={14} />
-            Negrito
-          </Button>
-          <Button type="button" variant="outline" size="sm" onClick={() => applyMarkup('<em>', '</em>')}>
-            <Italic size={14} />
-            Itálico
-          </Button>
-          <Button type="button" variant="outline" size="sm" onClick={() => applyTransform('upper')}>
-            <CaseUpper size={14} />
-            Maiúsculas
-          </Button>
-          <Button type="button" variant="outline" size="sm" onClick={() => applyTransform('lower')}>
-            <CaseLower size={14} />
-            Minúsculas
-          </Button>
-        </div>
-
-        {multiline ? (
-          <Textarea
-            ref={inputRef as React.RefObject<HTMLTextAreaElement>}
-            rows={5}
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-          />
-        ) : (
-          <Input
-            ref={inputRef as React.RefObject<HTMLInputElement>}
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-          />
-        )}
-      </div>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[92vh] w-[min(980px,calc(100vw-1.5rem))] overflow-hidden rounded-[2rem] border-stone-200 bg-white p-0 dark:border-stone-800 dark:bg-stone-950">
-          <div className="grid max-h-[92vh] lg:grid-cols-[1fr_300px]">
-            <div className="flex min-h-0 flex-col border-b border-stone-200 p-6 lg:border-b-0 lg:border-r dark:border-stone-800">
-              <DialogHeader className="mb-5 text-left">
-                <DialogTitle className="font-cormorant text-3xl text-stone-900 dark:text-white">
-                  {label}
-                </DialogTitle>
-                {helper && <DialogDescription className="font-inter text-sm text-stone-500 dark:text-stone-400">{helper}</DialogDescription>}
-              </DialogHeader>
-
-              <div className="mb-4 flex flex-wrap gap-2 rounded-2xl border border-stone-200 bg-white p-3 dark:border-stone-800 dark:bg-stone-950/60">
-                <Button type="button" variant="outline" size="sm" onClick={() => applyMarkup('<strong>', '</strong>')}>
-                  <Bold size={14} />
-                  Negrito
-                </Button>
-                <Button type="button" variant="outline" size="sm" onClick={() => applyMarkup('<em>', '</em>')}>
-                  <Italic size={14} />
-                  Itálico
-                </Button>
-                <Button type="button" variant="outline" size="sm" onClick={() => applyTransform('upper')}>
-                  <CaseUpper size={14} />
-                  Maiúsculas
-                </Button>
-                <Button type="button" variant="outline" size="sm" onClick={() => applyTransform('lower')}>
-                  <CaseLower size={14} />
-                  Minúsculas
-                </Button>
-                <Button type="button" variant="outline" size="sm" onClick={applyFontStyle}>
-                  <CaseSensitive size={14} />
-                  Fonte
-                </Button>
-                <div className="ml-auto flex gap-2">
-                  <select
-                    value={fontFamily}
-                    onChange={(event) => setFontFamily(event.target.value)}
-                    className="h-10 rounded-full border border-stone-200 bg-white px-3 font-inter text-sm dark:border-stone-800 dark:bg-stone-950"
-                  >
-                    <option value="inherit">Fonte do site</option>
-                    <option value="Cormorant Garamond, serif">Cormorant</option>
-                    <option value="Inter, sans-serif">Inter</option>
-                    <option value="Georgia, serif">Georgia</option>
-                    <option value="Arial, sans-serif">Arial</option>
-                  </select>
-                  <select
-                    value={fontSize}
-                    onChange={(event) => setFontSize(event.target.value)}
-                    className="h-10 rounded-full border border-stone-200 bg-white px-3 font-inter text-sm dark:border-stone-800 dark:bg-stone-950"
-                  >
-                    <option value="12">12px</option>
-                    <option value="14">14px</option>
-                    <option value="16">16px</option>
-                    <option value="18">18px</option>
-                    <option value="20">20px</option>
-                  </select>
-                </div>
-              </div>
-
-              {multiline ? (
-                <Textarea
-                  ref={inputRef as React.RefObject<HTMLTextAreaElement>}
-                  rows={22}
-                  value={value}
-                  onChange={(event) => onChange(event.target.value)}
-                  className="min-h-[56vh] flex-1 resize-none rounded-[1.5rem] border-stone-200 font-inter text-sm leading-7 dark:border-stone-800"
-                />
-              ) : (
-                <Input
-                  ref={inputRef as React.RefObject<HTMLInputElement>}
-                  value={value}
-                  onChange={(event) => onChange(event.target.value)}
-                  className="h-12 rounded-2xl border-stone-200 font-inter text-sm dark:border-stone-800"
-                />
-              )}
-            </div>
-            <div className="space-y-4 overflow-y-auto bg-stone-50 p-6 dark:bg-stone-900/40">
-              <div className="rounded-2xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-950/70">
-                <p className="font-inter text-[11px] uppercase tracking-[0.22em] text-stone-400 dark:text-stone-500">
-                  Preview
-                </p>
-                <p className="mt-2 break-words font-inter text-sm leading-7 text-stone-700 dark:text-stone-300">
-                  {value || 'Campo vazio'}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-950/70">
-                <p className="font-inter text-[11px] uppercase tracking-[0.22em] text-stone-400 dark:text-stone-500">
-                  Dica
-                </p>
-                <p className="mt-2 font-inter text-sm leading-6 text-stone-600 dark:text-stone-300">
-                  Formatação é salva como texto compatível com os projetos antigos e novos.
-                </p>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
-  )
 }
 
 type AdminProjectResponse = {
@@ -564,34 +337,14 @@ export default function AdminProjectDetailEditorPage({ params }: PageProps) {
       )}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <ProjectTextField
-          label="Titulo"
-          value={project.title}
-          onChange={(value) => setProject((prev) => (prev ? { ...prev, title: value } : prev))}
-          helper="Título principal do projeto."
-        />
+        <Field label="Titulo" value={project.title} onChange={(value) => setProject((prev) => prev ? { ...prev, title: value } : prev)} />
         <Field label="Slug" value={project.slug} onChange={(value) => setProject((prev) => prev ? { ...prev, slug: value } : prev)} />
-        <ProjectTextField
-          label="Subtitulo"
-          value={project.subtitle}
-          onChange={(value) => setProject((prev) => (prev ? { ...prev, subtitle: value } : prev))}
-          helper="Aceita negrito, itálico, maiúsculas/minúsculas e ajuste de fonte."
-        />
+        <Field label="Subtitulo" value={project.subtitle} onChange={(value) => setProject((prev) => prev ? { ...prev, subtitle: value } : prev)} />
         <Field label="Location" value={project.location} onChange={(value) => setProject((prev) => prev ? { ...prev, location: value } : prev)} />
         <Field label="Cover image" value={project.coverImage} onChange={(value) => setProject((prev) => prev ? { ...prev, coverImage: value } : prev)} />
         <Field label="Year" value={project.year} onChange={(value) => setProject((prev) => prev ? { ...prev, year: value } : prev)} />
-        <ProjectTextField
-          label="Client"
-          value={project.client}
-          onChange={(value) => setProject((prev) => (prev ? { ...prev, client: value } : prev))}
-          helper="Útil para nomes, parceiros e créditos curtos."
-        />
-        <ProjectTextField
-          label="Credits"
-          value={project.credits}
-          onChange={(value) => setProject((prev) => (prev ? { ...prev, credits: value } : prev))}
-          helper="Pode receber formatação leve."
-        />
+        <Field label="Client" value={project.client} onChange={(value) => setProject((prev) => prev ? { ...prev, client: value } : prev)} />
+        <Field label="Credits" value={project.credits} onChange={(value) => setProject((prev) => prev ? { ...prev, credits: value } : prev)} />
         <div className="space-y-2">
           <Label>Status</Label>
           <select
@@ -626,13 +379,14 @@ export default function AdminProjectDetailEditorPage({ params }: PageProps) {
         </div>
       </div>
 
-      <ProjectTextField
-        label="Descricao"
-        value={project.description}
-        onChange={(value) => setProject((prev) => (prev ? { ...prev, description: value } : prev))}
-        multiline
-        helper="Aqui a formatação ajuda muito na apresentação do projeto."
-      />
+      <div className="space-y-2">
+        <Label>Descricao</Label>
+        <Textarea
+          rows={6}
+          value={project.description}
+          onChange={(event) => setProject((prev) => (prev ? { ...prev, description: event.target.value } : prev))}
+        />
+      </div>
 
       <div className="space-y-2">
         <h2 className="font-inter text-sm font-semibold uppercase tracking-wide text-stone-500">
