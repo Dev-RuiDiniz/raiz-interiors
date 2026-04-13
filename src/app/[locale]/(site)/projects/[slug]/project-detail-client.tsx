@@ -173,7 +173,8 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
                         alt={`${project.title} - Image ${index + 1}`}
                         fill
                         preserveQuality={!useOptimizedProjectImages}
-                        sizes="(min-width: 1024px) 50vw, 50vw"
+                        priority={index === 0}
+                        sizes="(min-width: 1280px) 42vw, (min-width: 1024px) 44vw, 50vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                       />
                       <div className="absolute inset-0 bg-gradient-to-b from-stone-950/5 via-transparent to-stone-950/20" />
