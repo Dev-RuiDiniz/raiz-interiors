@@ -31,6 +31,9 @@ interface HeaderProps {
 }
 
 export function Header({ dict, locale }: HeaderProps) {
+  const LOGO_DESKTOP_CLASS = 'h-[123px] w-[347px] object-contain transition-all duration-500 sm:h-[106px] sm:w-[300px] lg:h-[123px] lg:w-[347px]'
+  const HEADER_HEIGHT_CLASS = 'flex items-center justify-between h-36 lg:h-44'
+
   const navItems = [
     { label: dict.projects, href: `/${locale}/projects` },
     { label: dict.services, href: `/${locale}/services` },
@@ -102,35 +105,33 @@ export function Header({ dict, locale }: HeaderProps) {
         )}
       >
         <div className="container mx-auto px-6 lg:px-12">
-          <div className="flex items-center justify-between h-20 lg:h-24">
+          <div className={HEADER_HEIGHT_CLASS}>
             {/* Logo */}
-            <Link href={`/${locale}`} className="relative z-50">
-              <div className="relative h-[42px] w-[118px] sm:h-[48px] sm:w-[134px] lg:h-[54px] lg:w-[151px]">
-                {/* White logo visible at top of home before scroll */}
-                <Image
-                  src="/raizlogo_white.png"
-                  alt="RAIZ Interiors"
-                  fill
-                  priority
-                  loading="eager"
-                  sizes="(min-width: 1024px) 151px, (min-width: 640px) 134px, 118px"
-                  className={cn(
-                    'object-contain transition-all duration-500',
-                    useDarkText ? 'opacity-0 pointer-events-none' : 'opacity-100'
-                  )}
-                />
-                {/* Dark logo visible on scroll and on light pages */}
-                <Image
-                  src="/raizlogo_preta.png"
-                  alt="RAIZ Interiors"
-                  fill
-                  sizes="(min-width: 1024px) 151px, (min-width: 640px) 134px, 118px"
-                  className={cn(
-                    'object-contain transition-all duration-500',
-                    useDarkText ? 'opacity-100' : 'opacity-0'
-                  )}
-                />
-              </div>
+            <Link href={`/${locale}`} className="relative z-50 block shrink-0">
+              {/* White logo visible at top of home before scroll */}
+              <Image
+                src="/raizlogo_white.png"
+                alt="RAIZ Interiors"
+                priority
+                loading="eager"
+                width={375}
+                height={133}
+                className={cn(
+                  LOGO_DESKTOP_CLASS,
+                  useDarkText ? 'opacity-0 pointer-events-none absolute inset-0' : 'opacity-100'
+                )}
+              />
+              {/* Dark logo visible on scroll and on light pages */}
+              <Image
+                src="/raizlogo_preta.png"
+                alt="RAIZ Interiors"
+                width={375}
+                height={133}
+                className={cn(
+                  LOGO_DESKTOP_CLASS,
+                  useDarkText ? 'opacity-100' : 'opacity-0 absolute inset-0'
+                )}
+              />
             </Link>
 
             {/* Desktop Navigation */}
