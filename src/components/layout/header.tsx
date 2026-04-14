@@ -31,8 +31,8 @@ interface HeaderProps {
 }
 
 export function Header({ dict, locale }: HeaderProps) {
-  const LOGO_DESKTOP_CLASS = 'h-[123px] w-[347px] object-contain transition-all duration-500 sm:h-[106px] sm:w-[300px] lg:h-[123px] lg:w-[347px]'
-  const HEADER_HEIGHT_CLASS = 'flex items-center justify-between h-36 lg:h-44'
+  const LOGO_DESKTOP_CLASS = 'block h-auto w-[220px] object-contain transition-all duration-500 sm:w-[236px] lg:w-[252px]'
+  const HEADER_HEIGHT_CLASS = 'flex min-h-[88px] items-center justify-between lg:min-h-[96px]'
 
   const navItems = [
     { label: dict.projects, href: `/${locale}/projects` },
@@ -55,6 +55,7 @@ export function Header({ dict, locale }: HeaderProps) {
 
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [hasMounted, setHasMounted] = useState(false)
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -62,8 +63,10 @@ export function Header({ dict, locale }: HeaderProps) {
   const darkHeroPages = [`/${locale}`]
   const hasDarkHero = darkHeroPages.includes(pathname) || pathname.startsWith(`/${locale}/projects/`)
 
+  const effectiveScrolled = hasMounted ? isScrolled : false
+
   // Use dark text when hero is light, on scroll, or with mobile menu open.
-  const useDarkText = !hasDarkHero || isScrolled || isOpen
+  const useDarkText = !hasDarkHero || effectiveScrolled || isOpen
 
   const equivalentPathsByLocale = useMemo(() => {
     const query = searchParams.toString()
@@ -82,9 +85,13 @@ export function Header({ dict, locale }: HeaderProps) {
   }, [pathname, searchParams])
 
   useEffect(() => {
+    setHasMounted(true)
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
     }
+
+    handleScroll()
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -99,12 +106,12 @@ export function Header({ dict, locale }: HeaderProps) {
       <header
         className={cn(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
-          isScrolled
+          effectiveScrolled
             ? 'bg-[#CFCAC7] backdrop-blur-md shadow-sm'
             : 'bg-transparent'
         )}
       >
-        <div className="container mx-auto px-6 lg:px-12">
+        <div className="container mx-auto px-6 lg:px-10">
           <div className={HEADER_HEIGHT_CLASS}>
             {/* Logo */}
             <Link href={`/${locale}`} className="relative z-50 block shrink-0">
@@ -135,13 +142,13 @@ export function Header({ dict, locale }: HeaderProps) {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-12">
+            <nav className="hidden lg:flex items-center gap-10">
               {navItems.map((item) => (
                 <div key={item.href}>
                   <Link
                     href={item.href}
                     className={cn(
-                      'relative font-inter text-xs tracking-[0.2em] uppercase transition-colors duration-300 group',
+                      'relative font-inter text-[11px] leading-none tracking-[0.2em] uppercase transition-colors duration-300 group',
                       pathname === item.href
                         ? useDarkText
                           ? 'text-stone-900'
@@ -176,7 +183,7 @@ export function Header({ dict, locale }: HeaderProps) {
                       key={option}
                       href={equivalentPathsByLocale[option]}
                       className={cn(
-                        'rounded-full px-3 py-1 font-inter text-[10px] tracking-[0.2em] uppercase transition-colors',
+                        'rounded-full px-3 py-1 font-inter text-[10px] leading-none tracking-[0.2em] uppercase transition-colors',
                         isActive
                           ? useDarkText
                             ? 'bg-stone-800 text-white'
@@ -208,7 +215,7 @@ export function Header({ dict, locale }: HeaderProps) {
                       key={option}
                       href={equivalentPathsByLocale[option]}
                       className={cn(
-                        'rounded-full px-2 py-1 font-inter text-[9px] tracking-[0.2em] uppercase transition-colors',
+                        'rounded-full px-2 py-1 font-inter text-[9px] leading-none tracking-[0.2em] uppercase transition-colors',
                         isActive
                           ? useDarkText
                             ? 'bg-stone-800 text-white'
