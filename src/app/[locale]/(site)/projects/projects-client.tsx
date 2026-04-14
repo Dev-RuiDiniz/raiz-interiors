@@ -24,6 +24,7 @@ export function ProjectsClient({ locale, dict, projects }: ProjectsClientProps) 
               src={dict.hero.backgroundImage}
               alt={dict.hero.heading || 'Projects background'}
               fill
+              priority
               sizes="100vw"
               className="object-cover"
             />
@@ -56,9 +57,9 @@ export function ProjectsClient({ locale, dict, projects }: ProjectsClientProps) 
       >
         <div className="px-2 lg:px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-3">
-            {projects.map((project) => (
+            {projects.map((project, index) => (
               <div key={project.id}>
-                <ProjectCard locale={locale} dict={dict} project={project} />
+                <ProjectCard locale={locale} dict={dict} project={project} priority={index < 3} />
               </div>
             ))}
           </div>
@@ -68,7 +69,7 @@ export function ProjectsClient({ locale, dict, projects }: ProjectsClientProps) 
   )
 }
 
-function ProjectCard({ locale, dict, project }: { locale: string; dict: any; project: any }) {
+function ProjectCard({ locale, dict, project, priority }: { locale: string; dict: any; project: any; priority?: boolean }) {
   const isComingSoon = project.status === 'COMING_SOON'
   const isWorkInProgress = project.status === 'WORK_IN_PROGRESS'
 
@@ -92,6 +93,7 @@ function ProjectCard({ locale, dict, project }: { locale: string; dict: any; pro
           src={project.coverImage}
           alt={project.title}
           fill
+          priority={priority}
           sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
           className={cn(
             'object-cover transition-transform duration-700',

@@ -11,8 +11,9 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
   productionBrowserSourceMaps: false,
   images: {
-    unoptimized: true,
-    qualities: [75, 85],
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 828, 1080, 1280, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
     remotePatterns: [
       {
         protocol: 'https',
