@@ -22,7 +22,8 @@ interface ProjectDetailClientProps {
 export function ProjectDetailClient({ locale, dict, project, adjacent }: ProjectDetailClientProps) {
   const labels = dict.labels
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null)
-  const useOptimizedProjectImages = project.slug === 'elegant-timeless-duplex'
+  // All projects now use Next.js Image Optimization — no special casing needed
+  const useOptimizedProjectImages = true
 
   const lightboxLabels =
     locale === 'pt'
@@ -83,8 +84,8 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
     })
   }, [activeImageIndex, project.images])
 
-  const getProjectImageSrc = (src: string) =>
-    useOptimizedProjectImages ? src : `${src}?hq=project-detail-v2`
+  // Return src as-is — Next.js Image Optimization handles sizing and format
+  const getProjectImageSrc = (src: string) => src
 
   const showPreviousImage = () => {
     setActiveImageIndex((current) => {
