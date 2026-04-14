@@ -6,6 +6,14 @@ import { getPublishedProjectsSettings } from '@/lib/cms/projects-settings'
 
 const hiddenProjectSlugs = new Set(['young-soul-city-apartment'])
 
+const forcedProjectStatuses: Record<string, string> = {
+  'beach-house-troia': 'WORK_IN_PROGRESS',
+  'pombaline-restoration-principe-real': 'WORK_IN_PROGRESS',
+  'rural-retreat': 'WORK_IN_PROGRESS',
+  'beach-house-troia-ii': 'COMING_SOON',
+  'weekend-family-house': 'COMING_SOON',
+}
+
 export default async function ProjectsPage({
   params,
 }: {
@@ -34,7 +42,9 @@ export default async function ProjectsPage({
               : project.subtitle
             : project.subtitle || projectDict?.subtitle || '',
         location: preferDictionary ? projectDict?.location || project.location : project.location || projectDict?.location || '',
-        status: project.status === 'DRAFT' ? 'WORK_IN_PROGRESS' : project.status,
+        status:
+          forcedProjectStatuses[project.slug] ||
+          (project.status === 'DRAFT' ? 'WORK_IN_PROGRESS' : project.status),
       }
     })
 
