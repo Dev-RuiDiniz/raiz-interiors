@@ -31,8 +31,8 @@ interface HeaderProps {
 }
 
 export function Header({ dict, locale }: HeaderProps) {
-  const LOGO_DESKTOP_CLASS = 'block h-auto w-[220px] object-contain transition-all duration-500 sm:w-[236px] lg:w-[252px]'
-  const HEADER_HEIGHT_CLASS = 'flex min-h-[88px] items-center justify-between lg:min-h-[96px]'
+  const LOGO_DESKTOP_CLASS = 'block h-auto w-[280px] object-contain transition-all duration-500 sm:w-[300px] lg:w-[320px]'
+  const HEADER_HEIGHT_CLASS = 'flex min-h-[96px] items-center justify-between lg:min-h-[104px]'
 
   const navItems = [
     { label: dict.projects, href: `/${locale}/projects` },
