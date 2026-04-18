@@ -23,7 +23,7 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
   const labels = dict.labels
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null)
   // All projects now use Next.js Image Optimization — no special casing needed
-  const useOptimizedProjectImages = true
+  const useOptimizedProjectImages = false
 
   const lightboxLabels =
     locale === 'pt'
@@ -174,7 +174,7 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
                         alt={`${project.title} - Image ${index + 1}`}
                         fill
                         preserveQuality={!useOptimizedProjectImages}
-                        priority={index === 0}
+                        loading="lazy"
                         sizes="(min-width: 1280px) 42vw, (min-width: 1024px) 44vw, 50vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                       />

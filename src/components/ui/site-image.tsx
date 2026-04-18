@@ -5,7 +5,16 @@ type SiteImageProps = ImageProps & {
   preserveQuality?: boolean
 }
 
-export function SiteImage({ src, priority, loading, placeholder, blurDataURL, preserveQuality = false, ...props }: SiteImageProps) {
+export function SiteImage({
+  src,
+  priority,
+  loading,
+  placeholder,
+  blurDataURL,
+  quality,
+  preserveQuality = true,
+  ...props
+}: SiteImageProps) {
   const resolvedSrc =
     typeof src === 'string' && !preserveQuality
       ? getOptimizedAssetPath(src)
@@ -23,6 +32,7 @@ export function SiteImage({ src, priority, loading, placeholder, blurDataURL, pr
       loading={resolvedLoading}
       placeholder={resolvedPlaceholder}
       blurDataURL={resolvedBlurDataURL}
+      quality={quality ?? 90}
     />
   )
 }

@@ -121,6 +121,7 @@ export function Header({ dict, locale }: HeaderProps) {
                 alt="RAIZ Interiors"
                 priority
                 loading="eager"
+                unoptimized
                 width={375}
                 height={133}
                 className={cn(
@@ -132,6 +133,7 @@ export function Header({ dict, locale }: HeaderProps) {
               <Image
                 src="/raizlogo_preta.png"
                 alt="RAIZ Interiors"
+                unoptimized
                 width={375}
                 height={133}
                 className={cn(

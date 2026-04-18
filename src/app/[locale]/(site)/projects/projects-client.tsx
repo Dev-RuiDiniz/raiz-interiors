@@ -59,7 +59,7 @@ export function ProjectsClient({ locale, dict, projects }: ProjectsClientProps) 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-3">
             {projects.map((project, index) => (
               <div key={project.id}>
-                <ProjectCard locale={locale} dict={dict} project={project} priority={index < 3} />
+                <ProjectCard locale={locale} dict={dict} project={project} priority={index === 0} />
               </div>
             ))}
           </div>
