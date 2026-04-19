@@ -174,8 +174,9 @@ export function ProjectDetailClient({ locale, dict, project, adjacent }: Project
                         alt={`${project.title} - Image ${index + 1}`}
                         fill
                         preserveQuality={!useOptimizedProjectImages}
+                        quality={90}
                         loading="lazy"
-                        sizes="(min-width: 1280px) 42vw, (min-width: 1024px) 44vw, 50vw"
+                        sizes="(max-width: 768px) 100vw, 1200px"
                         className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                       />
                       <div className="absolute inset-0 bg-gradient-to-b from-stone-950/5 via-transparent to-stone-950/20" />
