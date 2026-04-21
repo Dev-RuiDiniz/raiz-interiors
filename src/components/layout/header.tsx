@@ -31,7 +31,7 @@ interface HeaderProps {
 }
 
 export function Header({ dict, locale }: HeaderProps) {
-  const LOGO_DESKTOP_CLASS = 'block h-auto w-[280px] object-contain transition-all duration-500 sm:w-[300px] lg:w-[320px]'
+  const LOGO_DESKTOP_CLASS = 'block h-auto w-[160px] object-contain transition-all duration-500 min-[375px]:w-[185px] min-[430px]:w-[210px] sm:w-[300px] lg:w-[320px]'
   const HEADER_HEIGHT_CLASS = 'flex min-h-[96px] items-center justify-between lg:min-h-[104px]'
 
   const navItems = [
@@ -111,7 +111,7 @@ export function Header({ dict, locale }: HeaderProps) {
             : 'bg-transparent'
         )}
       >
-        <div className="container mx-auto px-6 lg:px-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-10">
           <div className={HEADER_HEIGHT_CLASS}>
             {/* Logo */}
             <Link href={`/${locale}`} className="relative z-50 block shrink-0">
@@ -202,7 +202,7 @@ export function Header({ dict, locale }: HeaderProps) {
               </div>
             </nav>
 
-            <div className="flex items-center gap-3 lg:hidden">
+            <div className="flex items-center gap-2 sm:gap-3 lg:hidden">
               <div
                 className={cn(
                   'flex items-center rounded-full border px-1 py-1',
