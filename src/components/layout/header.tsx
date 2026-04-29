@@ -22,9 +22,9 @@ interface HeaderProps {
 
 export function Header({ dict, locale }: HeaderProps) {
   const LOGO_DESKTOP_CLASS =
-    'block h-auto w-[170px] object-contain transition-all duration-500 sm:w-[240px] lg:w-[320px]'
+    'block h-auto w-[202px] object-contain transition-all duration-500 sm:w-[240px] lg:w-[350px]'
   const HEADER_HEIGHT_CLASS =
-    'flex min-h-[88px] items-center justify-between gap-4 lg:min-h-[104px]'
+    'flex min-h-[80px] items-center justify-between gap-4 lg:min-h-[96px]'
 
   const navItems = [
     { label: dict.projects, href: `/${locale}/projects` },
@@ -96,7 +96,7 @@ export function Header({ dict, locale }: HeaderProps) {
           effectiveScrolled ? 'bg-[#CFCAC7] backdrop-blur-md shadow-sm' : 'bg-transparent'
         )}
       >
-        <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-6 lg:px-12">
           <div className={HEADER_HEIGHT_CLASS}>
             <Link href={`/${locale}`} className="relative z-50 block shrink-0 flex-none">
               <Image
@@ -125,13 +125,13 @@ export function Header({ dict, locale }: HeaderProps) {
               />
             </Link>
 
-            <nav className="hidden items-center gap-10 lg:flex">
+            <nav className="hidden items-center gap-12 lg:flex">
               {navItems.map((item) => (
                 <div key={item.href}>
                   <Link
                     href={item.href}
                     className={cn(
-                      'relative whitespace-nowrap font-inter text-[11px] leading-none tracking-[0.2em] uppercase transition-colors duration-300 group',
+                      'relative whitespace-nowrap font-inter text-xs leading-none tracking-[0.2em] uppercase transition-colors duration-300 group',
                       pathname === item.href
                         ? useDarkText
                           ? 'text-stone-900'
