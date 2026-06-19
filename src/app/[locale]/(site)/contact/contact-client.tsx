@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { submitContactToWeb3Forms } from '@/lib/web3forms-contact'
 
 interface ContactClientProps {
   locale: string
@@ -20,6 +21,7 @@ interface ContactClientProps {
 export function ContactClient({ locale, dict }: ContactClientProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   // Define schema dynamically based on dictionary validation messages
   const contactSchema = z.object({
@@ -64,17 +66,67 @@ export function ContactClient({ locale, dict }: ContactClientProps) {
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true)
-    
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    
-    console.log('Form submitted:', data)
-    setIsSubmitting(false)
-    setIsSubmitted(true)
-    reset()
+    setSubmitError(null)
+    setIsSubmitted(false)
 
-    // Reset success message after 5 seconds
-    setTimeout(() => setIsSubmitted(false), 5000)
+    const submission = {
+      ...data,
+      locale,
+      source: 'contact-page',
+    }
+
+    const saveContactSubmission = async () => {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submission),
+      })
+
+      const payload = await response.json().catch(() => null)
+
+      if (!response.ok || !payload?.success) {
+        throw new Error(payload?.error || 'Falha ao salvar o formulário.')
+      }
+
+      return payload
+    }
+
+    try {
+      const [emailOutcome, dbOutcome] = await Promise.allSettled([
+        submitContactToWeb3Forms(submission),
+        saveContactSubmission(),
+      ])
+
+      const emailResult =
+        emailOutcome.status === 'fulfilled'
+          ? emailOutcome.value
+          : {
+              success: false,
+              message: emailOutcome.reason instanceof Error ? emailOutcome.reason.message : dict.form.error.message,
+            }
+
+      if (!emailResult.success) {
+        throw new Error(emailResult.message || dict.form.error.message)
+      }
+
+      if (dbOutcome.status === 'rejected') {
+        console.error('Erro ao salvar contato no banco:', dbOutcome.reason)
+      }
+
+      reset()
+      setIsSubmitted(true)
+
+      // Reset success message after 5 seconds
+      setTimeout(() => setIsSubmitted(false), 5000)
+    } catch (error) {
+      console.error('Erro ao enviar formulário de contacto:', error)
+      const message = error instanceof Error && error.message ? error.message : dict.form.error.message
+      setSubmitError(message)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -203,7 +255,23 @@ export function ContactClient({ locale, dict }: ContactClientProps) {
                   </p>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <>
+                  {submitError ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-5 bg-red-50 border border-red-200 text-center mb-6"
+                    >
+                      <h3 className="font-cormorant text-xl text-red-800 mb-2">
+                        {dict.form.error.title}
+                      </h3>
+                      <p className="font-inter text-sm text-red-700 leading-relaxed">
+                        {submitError}
+                      </p>
+                    </motion.div>
+                  ) : null}
+
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                       <label className="block font-inter text-xs tracking-[0.15em] uppercase text-stone-500 mb-2">
@@ -310,7 +378,8 @@ export function ContactClient({ locale, dict }: ContactClientProps) {
                       </span>
                     )}
                   </Button>
-                </form>
+                  </form>
+                </>
               )}
             </motion.div>
           </div>

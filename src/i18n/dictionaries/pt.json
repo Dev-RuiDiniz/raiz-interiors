@@ -186,6 +186,10 @@
         "title": "Obrigado!",
         "message": "A sua mensagem foi enviada. Entraremos em contacto em breve."
       },
+      "error": {
+        "title": "Algo correu mal",
+        "message": "Não conseguimos enviar a sua mensagem agora. Tente novamente dentro de alguns minutos ou escreva diretamente para info@raiz-interiors.com."
+      },
       "button": {
         "sending": "A enviar...",
         "send": "Enviar Mensagem"

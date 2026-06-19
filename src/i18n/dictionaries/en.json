@@ -147,6 +147,10 @@
         "title": "Thank You!",
         "message": "Your message has been sent. We'll get back to you soon."
       },
+      "error": {
+        "title": "Something went wrong",
+        "message": "We couldn't send your message right now. Please try again in a few minutes or email us directly at info@raiz-interiors.com."
+      },
       "button": {
         "sending": "Sending...",
         "send": "Send Message"

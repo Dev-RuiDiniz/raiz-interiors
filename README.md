@@ -1,64 +1,55 @@
 # RAIZ Interiors
 
-> Premium Interior Design Studio Website
+Website built with Next.js 16, Prisma and React 19.
 
-A modern, sophisticated website for RAIZ Interiors - a design studio dedicated to creating meaningful spaces that tell your story.
+## Requirements
 
-## Features
+- Node.js 22+
+- pnpm 10+
+- PostgreSQL
 
-- **Modern Stack**: Next.js 14+ with App Router, TypeScript, Tailwind CSS
-- **Elegant Design**: Minimalist aesthetic with sophisticated typography
-- **Fully Responsive**: Optimized for all device sizes
-- **Animations**: Smooth transitions with Framer Motion
-- **Component Library**: Shadcn/ui + Radix UI
-- **Database Ready**: Prisma ORM with PostgreSQL schema
-- **Form Validation**: React Hook Form + Zod
-- **GDPR Compliant**: Cookie consent banner
-- **WhatsApp Integration**: Floating chat widget
-
-## Pages
-
-- **Home** - Hero, featured projects, services preview
-- **Projects** - Grid layout with filters + individual project pages
-- **Services** - Service offerings + process diagram
-- **About** - Studio story, values, Instagram feed
-- **Contact** - Contact form with validation
-
-## Tech Stack
-
-| Category | Technology |
-|----------|------------|
-| Framework | Next.js 14+ |
-| Language | TypeScript |
-| Styling | Tailwind CSS |
-| Components | Shadcn/ui, Radix UI |
-| Animations | Framer Motion |
-| Database | PostgreSQL + Prisma |
-| Validation | Zod |
-| Forms | React Hook Form |
-
-## Getting Started
+## Install
 
 ```bash
-# Install dependencies
 pnpm install
+```
 
-# Run development server
+## Development
+
+```bash
 pnpm dev
+```
 
-# Build for production
+## Production build
+
+```bash
 pnpm build
 ```
 
-## Environment Variables
+## Type check
 
-Create a `.env` file with:
+```bash
+pnpm typecheck
+```
+
+## Environment variables
+
+Create a `.env.local` file with:
 
 ```env
 DATABASE_URL="postgresql://..."
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret"
+NEXTAUTH_SECRET="..."
+NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY="..."
+APIFY_API_TOKEN="" # optional unless using /api/instagram/sync
 ```
+
+### Contact form notes
+
+- The contact form sends email through **Web3Forms** from the browser.
+- Configure `info@raiz-interiors.com` as the notification inbox in the Web3Forms dashboard.
+- `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` is required for the form to submit successfully.
+- `.env.local` must stay out of git.
+- The API route still stores contact submissions in the database when Prisma is configured.
 
 ## Deploy
 
@@ -66,34 +57,9 @@ Ready for deployment on Vercel:
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/WBianchi/raiz-interiors&root-directory=Deploy)
 
-This directory is the official Root Directory for Vercel in this repository. Build and deployment settings must point to `Deploy/` at the repository root.
+This repository uses `Deploy/` as the official Vercel root directory. Build and deployment settings must point to that folder.
 
----
+## Notes
 
-Developed with care for RAIZ Interiors.
-# raiz_interiors_site
-## Environment Variables
-
-Use `.env.example` as base:
-
-```bash
-cp .env.example .env.local
-```
-
-Minimum required values:
-
-```env
-DATABASE_URL="postgresql://..."
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret"
-APIFY_API_TOKEN="" # optional unless using /api/instagram/sync
-```
-
-Detailed setup and staging strategy: `doc/setup-staging.md`.
-
-## Vercel root directory
-
-- Repository Root Directory: `Deploy`
-- Install, typecheck and build commands for production must run from this folder
-- Do not add `rootDirectory` to `vercel.json`; configure it in the Vercel project settings instead
-- Operational rationale is documented in `../docs/vercel-deploy.md`
+- Keep `.env.local` out of git.
+- The frontend shows validation and delivery feedback without changing the page layout.
