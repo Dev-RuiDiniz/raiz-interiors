@@ -83,3 +83,18 @@ Nesta rodada, o projeto recebeu:
 - e atualização do README.
 
 Se você abrir o repositório depois, este arquivo deve ser o primeiro ponto de referência para entender o que foi alterado.
+
+## 7) Correção do envio em produção
+
+### O que foi ajustado
+- O helper da Web3Forms passou a usar um fallback do access key público no próprio código.
+- Isso remove a dependência exclusiva de variável de ambiente para o envio em produção.
+- O envio interno e a interface do formulário permaneceram iguais.
+
+### Arquivo relacionado
+- `src/lib/web3forms-contact.ts`
+
+### Motivo da correção
+- O código no GitHub dependia de `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` estar configurada no ambiente de build.
+- Quando a produção subiu sem essa variável, o formulário passou a falhar mesmo com o restante do código correto.
+- Com o fallback, o deploy atual passa a enviar corretamente sem exigir ajuste extra no painel de hospedagem.

@@ -14,6 +14,7 @@ export interface SendWeb3FormsResult {
 }
 
 const WEB3FORMS_URL = 'https://api.web3forms.com/submit'
+const WEB3FORMS_ACCESS_KEY = '9a8f9f9e-e3df-4e02-b059-e5e7fbeb43f8'
 const DEFAULT_SUCCESS_MESSAGE = 'Email enviado com sucesso.'
 
 const safeJsonParse = async (response: Response) => {
@@ -25,7 +26,7 @@ const safeJsonParse = async (response: Response) => {
 }
 
 export async function submitContactToWeb3Forms(submission: ContactSubmission): Promise<SendWeb3FormsResult> {
-  const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim()
+  const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim() || WEB3FORMS_ACCESS_KEY
 
   if (!accessKey) {
     return {
