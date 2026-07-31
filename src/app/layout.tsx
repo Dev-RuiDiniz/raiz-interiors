@@ -11,6 +11,7 @@ import { cormorant, inter, playfair } from "@/lib/fonts"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { SessionProvider } from "@/components/providers/session-provider"
 import { isLocale, localeCookieName } from "@/i18n/config"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const getMetadataBase = () => {
   try {
@@ -72,6 +73,7 @@ export default async function RootLayout({
             {children}
           </ThemeProvider>
         </SessionProvider>
+        <SpeedInsights />
       </body>
     </html>
   )
